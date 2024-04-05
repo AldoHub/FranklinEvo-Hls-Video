@@ -1,0 +1,116 @@
+<!--- main component holds the base of the application-->
+<div class="container-inner-wrapper">
+
+    <!-- spinner component -->
+    <app-spinner *ngIf="isVimeoLoading"></app-spinner>
+    
+
+    <div class="category-video-wrapper">
+
+        <!-- idle video -->
+        <video #idleVideoNew id="idleVideo" [ngClass]="{'showIdleVideo' : showIdleVideoPlayer}"  playsinline autoplay muted loop></video>
+
+        <!--category video  -->
+        <video #categoryVideoNew id="categoryVideo" [ngClass]="{'showCatPlayer' : showCategoryVideoPlayer}" playsinline autoplay muted></video>
+
+        <!--subcategory video  -->
+        <video #subCategoryVideoNew id="subcategoryVideo" [ngClass]="{'showSubCatPlayer' : showSubCategoryVideoPlayer}" playsinline autoplay muted></video>
+
+
+        <!-- START --- idle animation videos -->
+            <!--<div id="idleVideo" [ngClass]="{'showIdleVideo' : showIdleVideoPlayer}" ></div>-->
+        <!-- END--- idle animation videos -->
+      
+        <!-- START --- category animation videos -->    
+           <!-- <div id="categoryVideo" [ngClass]="{'showCatPlayer' : showCategoryVideoPlayer}" ></div>-->
+        
+        <!-- END --- category animation videos -->
+       
+        <!-- START --- subcategory animation videos -->
+           <!--<div id="subcategoryVideo" [ngClass]="{'showSubCatPlayer' : showSubCategoryVideoPlayer}"></div>--> 
+            
+        <!-- START --- mini menu -->
+
+        <div class="mobile-message">
+            <p>Rotate your device horizontally for optimal viewing.</p>
+            <img src="../assets/images/rotate_device.png" />
+        </div>
+
+    </div>
+
+    <!-- START --- mini menu & sections menu -->
+    <div class="mini-menu-wrapper" [ngClass]="{'active-menu' : isMenuActive}">
+        <div class="mini-menu" [ngClass]="{'disabled-mini-menu' : shouldDisableMiniMenu}">
+            <div class="logo-wrapper" (click)="setDefaultView()"><img src="../../assets/images/logo.png" alt="logo" /></div>
+            <div (click)="openMenu()">
+                <div>
+                    <span [ngClass]="{'active-menu-icon' : isMenuActive}" class="menu-icon">
+                        <div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                    </span>
+                </div>    
+            </div>
+        </div>
+        
+        <!-- *ngIf="!isMobile" -->
+        <div class="sections-menu" [ngClass]="{'sections-menu-active' : isMenuActive}" >
+            <div class="menu-wrapper">
+                <div class="menu-item" *ngFor="let title of titles | async; let i = index">
+                    <p (click)="onCategorySelect(title.name, $event, title.slug)" class="section-title">{{title.name}}</p>
+                    <div class="mobile-subcategories-wrapper" id="{{title.slug}}-submenu" *ngIf="isMobile">
+                        <div class="mobile-subcategories-inner-wrapper">
+                            <p class="mobile-subcategory" (click)="onSubCategorySelect(sub, i)" *ngFor="let sub of title.subcategories; let i = index">
+                                {{sub}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- END --- mini menu & sections menu -->
+
+    <!-- START --- breadcrumbs (tablet/mobile only) -->
+    <div class="breadcrumbs-wrapper" *ngIf="!isMobile">
+        <div class="breadcrumbs" [ngClass]="{'show-breadcrumbs' : breadcrumbsShouldBeVisible}">
+            <div class="breadcrumb-category" (click)="showSubMenu()">{{breadcrumbCat}}</div>
+            <img class="arrow-breadcrumb" src="../../assets/images/arrow_breadcrumb_30.png"/>
+            <div>{{breadcrumbSubCat}}</div>
+        </div>
+    </div>
+    <!-- END --- breadcrumbs -->
+    
+    <div *ngIf="!isMenuActive">
+    <div class="content-wrapper" *ngIf="isSectionSelected" [ngClass]="{'show-content' : contentShouldBeVisible}">
+        <div class="buttons-wrapper">
+           <button (click)="openSubcategoryInfo()" [ngClass]="{'show-more-info' : buttonShouldDisplay}"><img src='../../assets/images/more-info.png'/> <span>More Information</span></button>
+           <button (click)="replaySubcategoryVideo()" [ngClass]="{'show-replay' : buttonShouldDisplay}"><img src='../../assets/images/replay.png'/> <span style="margin-left:8px;">Replay</span></button>
+        </div>
+
+
+        <div class="inner-content-wrapper">
+            <div class="submenu-wrapper" *ngIf="shouldShowSubmenu">
+                <div class="subcategory-title"><p>{{categorySelected}}</p></div>
+                <div class="submenu-item" *ngFor="let subcategory of subcategories | async; let i = index" [ngClass]="{'disabled-subcategory-title' : shouldDisableBtn}">
+                    <p [ngClass]="{'active': selectedItem === i}" (click)="onSubCategorySelect(subcategory, i)" class="section-title"><span class="rectangle" [ngClass]="{'active-rectangle': selectedItem === i}"></span><span>{{subcategory}}</span></p>
+                </div>
+            </div>
+           
+            <div class="subcategory-content-wrapper" *ngIf="isMoreInfoSelected">
+               <div class="subcategory-content">
+                <div class="close-subcategory" (click)="closeSubcategory()"><span></span></div>
+                <div [innerHTML]="data"></div>   
+            </div>
+            </div>
+        </div>
+     
+    </div>
+    
+    </div>
+   
+</div>
+

@@ -1,0 +1,19 @@
+html, body, .container {
+    background: #111;
+}
+
+
+.container {
+    height: 100%;   
+}
+
+
+
+
+/*
+@media screen and (orientation:landscape) {
+    .container {
+        border: 10px solid red;
+    }
+}
+*/

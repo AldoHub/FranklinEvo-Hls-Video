@@ -1,0 +1,91 @@
+/* You can add global styles to this file, and also import other style files */
+body, html {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+    overflow-y: hidden;
+    font-family: "trade-gothic-next";
+}
+
+body {
+    /*
+    background-image: url(./assets/images/callout_7_1_.png);
+    background-size: cover;
+*/
+}
+
+.inner-data-container{
+    display: flex;
+    justify-content: space-between;
+    /*margin-top: 10px; */
+    /*max-height: 930px;*/
+    max-height: 100vh;
+    overflow: auto;
+    flex-direction: column;
+}
+
+.inner-data-container > div > img {
+    width: 100%;
+}
+
+
+/*
+.inner-data-container > div:first-of-type {
+    width: 44%;
+}
+
+.inner-data-container > div:last-of-type {
+    width: 45%;
+    padding-top: 2em;
+}
+
+
+
+.inner-data-container > div:last-of-type > img {
+    max-width: 650px;
+}
+
+.inner-data-container > div > p {
+    font-size: 1.1em;
+    line-height: 1.9em;
+    margin-bottom: 2.3em;
+    color: #0b3247;
+}
+
+.inner-content-img-description {
+    margin-top: 3em;
+}
+
+.inner-content-img-description p {
+    font-size: 25px;
+    padding-right: 1em;
+    letter-spacing: 1px;
+    line-height: 32px;
+}
+
+.inner-content-img-description:after {
+    content: "";
+    width: 34%;
+    max-width: 175px;
+    height: 10px;
+    background-color: #8cc63d;
+    display: block;
+}
+*/
+
+
+@media screen and (max-width: 1200px){
+    .subcategory-content-wrapper{
+        padding-top: 70px
+    }
+}
+
+@media screen and (max-height:420px){
+    
+    body, html {
+        overflow: auto;
+        height: 420px;
+    }
+
+   
+}
