@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, lastValueFrom, of } from "rxjs";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { replace } from 'lodash';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +15,12 @@ export class DataService {
     private httpClient: HttpClient
   ) {
       //read the file when the service loads 
-      this.config = this.httpClient.get<any>('./assets/categories.json', {headers: new HttpHeaders({'Content-Type': 'application/json'})});
+     this.config = this.httpClient.get<any>('./assets/categories.json', {headers: new HttpHeaders({'Content-Type': 'application/json'})});
       //this.config = this.httpClient.get<any>('http://franklinevo.clientdemos.net/wp/wp-content/uploads/2023/09/categories.json');
       //this.config = this.httpClient.get<any>('http://franklinwp.clientdemos.net/wp-content/uploads/2023/09/categories.json');
      //this.config = this.httpClient.get<any>('https://www.franklinfueling.com/wp-content/uploads/2023/09/categories.json');
+    
+     
    }
 
   //---- populates the subcategories or each main section/category

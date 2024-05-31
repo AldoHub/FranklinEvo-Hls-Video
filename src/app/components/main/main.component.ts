@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
-import { DataService } from '../data.service';
+import { DataService } from '../../services/data.service';
 import { BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import Hls from 'hls.js';
@@ -65,11 +65,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   public innerWidth!:any; 
 
-  //@vimeo/player players
-  //public idleVideoPlayer!:any;
-  //public categoryVideoPlayer!:any;
-  //public subcategoryVideoPlayer!:any;
-  
   //vimeo vars
   public showIdleVideoPlayer: boolean = true;
   public showCategoryVideoPlayer: boolean = false;
@@ -89,7 +84,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   public contentBoxTimer:any = "";
   public contentShouldBeVisible:boolean = false;
   public isMoreInfoSelected:boolean = false;
-  //public isSubCategoryVideoDone:boolean = false;
   public buttonShouldDisplay: boolean = false;
   public currentCategory:string = "";
   public timeouttime:number = 120000; //12000
@@ -110,11 +104,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   public selectedItem!:any;
   public shouldDisableBtn:boolean = true;
   public shouldDisableMiniMenu:boolean = false;
-  //public idleVideo!:string;
-  //public idleVideo2!:string;
   public isIdle:boolean = true;
-  //public endIdle1:boolean = false;
-  //public endIdle2:boolean = false;
   public oldTime!:any;
   public breadcrumbsShouldBeVisible:boolean = false;
   public breadcrumbCat!:string;
@@ -123,6 +113,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   public userActivity!:any;
   public userInactive: Subject<any> = new Subject();
   public isVideoPaused: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
+  //variable speed
+  public isVariableSpeed: boolean = false;
 
 
   public checkWindowSize(innerwidth: number){
@@ -146,13 +139,17 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     console.log("SETS THE APP TO THE INITIAL STATE");
     
     // clear the timer
-    clearTimeout(timer);
-
+    if(timer){
+      clearTimeout(timer);
+    }
+    
+    
     //clean the ui
     this.isSectionSelected = false;
     this.isSubCategorySelected = false;
     this.isSubVideoLoaded = false;
-   
+    this.isSubVideoRunning = false;
+
     this.categoryVideo = "";
     this.subCategoryVideo = "";
    
@@ -171,6 +168,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   public openMenu(){
     this.isMenuActive = !this.isMenuActive;
+    
   }
 
   public showSubMenu(){
@@ -230,6 +228,15 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     //get the time
     let v_time:any = await this.dataService.getSectionVideoTime(this.categorySelected);
 
+  
+    //check if the category is "Variable Speed 2"
+    if(this.categorySelected == "Variable Speed 2"){
+      this.isVariableSpeed = true;
+    }else{
+      this.isVariableSpeed = false;
+    }
+
+  
     //load the video
     if(!this.isMobile){
 
@@ -243,14 +250,16 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       catTimer = setTimeout(() => {
         this.shouldDisableBtn = false;
         this.shouldShowSubmenu = true;
-        this.categoryVideoElement.pause();
-        console.log("CATEGORY VIDEO PAUSED");
+        //--recent change
+        //this.categoryVideoElement.pause();
+        //console.log("CATEGORY VIDEO PAUSED");
       }, v_time);
 
       //ui cleaning
       this.isMenuActive = false;
       this.showCategoryVideoPlayer = true;
       this.breadcrumbsShouldBeVisible = true;
+      
 
     }
 
@@ -278,21 +287,22 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
           }
          
         }
+        
       }
     
-    }
-
    
+    }
 
    
   }
 
 
   public async onSubCategorySelect(name:string, index:any){
-
-    if(this.isMobile){
+   
+    if(!this.isDesktop){
       //close the menu
       this.isMenuActive = false;
+      this.idleVideoElement.play();
     }
 
     //set the first load to false
@@ -302,7 +312,11 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
     this.isVimeoLoading = true;
    
-    clearTimeout(timer);
+    //alert(timer);
+    if(timer){
+      clearTimeout(timer);
+    }
+    
     //clear the stuff
     this.buttonShouldDisplay = false;
     this.isSubCategorySelected = false;
@@ -311,6 +325,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     //Set the active
     this.selectedItem = index;
     
+
     //get and set the data
     let categoryData:any = await this.dataService.getCategoryData(name);
     this.data = categoryData["description"];
@@ -343,6 +358,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     
     }else{
      
+     
       //console.log("loding subcategory video: ", this.subCategoryVideo);
       this.loadVideos("subcategory", this.subCategoryVideo)
       //show subcategory video
@@ -350,26 +366,31 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       //set it to have a video running - for the queue
       this.isSubVideoRunning = true;
       this.isVimeoLoading = false;
-      
-
+     
       //set the timer for the subcategory video
       timer = setTimeout(async () => {
-        this.subCategoryVideoElement.pause();
-        this.isVideoPaused.next(true);
-        console.log("SUBCATERGORY VIDEO PAUSED");
+        //this.idleVideoElement.pause();
+        //--- recent change
+        //this.subCategoryVideoElement.pause();
+        //this.isVideoPaused.next(true);
+        //console.log("SUBCATERGORY VIDEO PAUSED");
       }, Math.floor(this.videoDuration))
-
+  
     }
 
+   
     this.subCategorySelected = name;
     this.breadcrumbSubCat = name;
 
-    //-- CHECK IF WE ARE ON MOBILE AND HIDE THE SUBMENU
 
+    //-- CHECK IF WE ARE ON MOBILE AND HIDE THE SUBMENU
+ 
     if(!this.isDesktop){
       this.shouldShowSubmenu = false;
+      this.breadcrumbsShouldBeVisible = true;
     }
 
+   
 
   }
 
@@ -424,36 +445,58 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
     //loads the idle video
     if(type == 'idle'){
-      hls.attachMedia(this.idleVideoElement);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        this.idleVideoElement.muted = true;
-        this.idleVideoElement.play();
-      });
+      console.log("LOADING IDLE VIDEO");
+
+      if(this.idleVideoElement.canPlayType('application/vnd.apple.mpegurl')){
+        this.idleVideoElement.src= src;
+      }else{
+        hls.attachMedia(this.idleVideoElement);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          this.idleVideoElement.muted = true;
+          this.idleVideoElement.play();
+        });
+      }
+
+
+     
     }
 
     //loads the category video
     if(type == 'category'){
-      hls.attachMedia(this.categoryVideoElement);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        this.categoryVideoElement.muted = true;
-        this.categoryVideoElement.play();
-      });
+      console.log("LOADING CATEGORY VIDEO");
+
+      if(this.categoryVideoElement.canPlayType('application/vnd.apple.mpegurl')){
+        this.categoryVideoElement.src= src;
+      }else{
+        hls.attachMedia(this.categoryVideoElement);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          this.categoryVideoElement.muted = true;
+          this.categoryVideoElement.play();
+        });
+      }
+      
     }
    
     //loads the category video
     if(type == 'subcategory'){
-      hls.attachMedia(this.subCategoryVideoElement);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        this.subCategoryVideoElement.muted = true;
-        this.subCategoryVideoElement.play();
-      });
+      console.log("LOADING SUBCATEGORY VIDEO");
+      if(this.subCategoryVideoElement.canPlayType('application/vnd.apple.mpegurl')){
+        this.subCategoryVideoElement.src= src;
+      }else{
+        hls.attachMedia(this.subCategoryVideoElement);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          this.subCategoryVideoElement.muted = true;
+          this.subCategoryVideoElement.play();  
+        });
+      }
     }
-
+    
   }
 
   //--- AFTERVIEWINIT
   async ngAfterViewInit(): Promise<any>{
 
+   
     //-- DEFINE THE PLAYERS 
     this.idleVideoElement = this.idleVideoNew?.nativeElement;
     this.categoryVideoElement = this.categoryVideoNew?.nativeElement;
@@ -464,8 +507,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
    
     //--- INIT THE PLAYERS (LOAD THE IDLE VIDEO)
     this.loadVideos("idle", this.idlee);
+   
     this.isVimeoLoading = false;
-
 
     if(this.subCategoryVideoElement){
 
@@ -474,11 +517,14 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
         this.isVimeoLoading = false;
         if(!this.isFirstLoad){
           
+         // console.log("CLEAR TIMER")
+          //clear timer
+         // clearTimeout(timer);
+    
           //if there is a new select
           if(!this.isPausedBybSubcatSelect){
            
             timer = setTimeout(async () => {
-              
               this.subCategoryVideoElement.pause();
               this.isVideoPaused.next(true);
               
@@ -540,6 +586,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.isVideoPaused.subscribe((value) => {
       if(value){
         //console.log("SUBJECT CHANGED!!")
+        this.isSectionSelected = true;
+        this.contentShouldBeVisible = true;
         this.shouldDisableBtn = false;
         this.shouldDisableMiniMenu = false;
         this.buttonShouldDisplay = true;

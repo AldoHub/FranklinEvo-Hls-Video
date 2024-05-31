@@ -59,7 +59,7 @@
 }
 
 .rectangle {
-    background: url('../../assets/images/Rectangle.png');
+   /* background: url('../../assets/images/Rectangle.png');*/
     width: 16px;
     height: 16px;
     display: inline-block;
@@ -221,6 +221,9 @@
 .mobile-subcategory{
     cursor: pointer;
 }
+
+
+
 
 
 /* ------------- Inner Container ------------- */
@@ -421,7 +424,7 @@
 .close-subcategory > span {
     width: 30px;
     height: 30px;
-    background-image: url(../../assets/images/close.png);
+    /*background-image: url(../../assets/images/close.png);*/
     background-size: cover ;
     display: block;
     cursor: pointer;

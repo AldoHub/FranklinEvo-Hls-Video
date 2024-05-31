@@ -1,0 +1,50 @@
+
+<div class="variable-container-wrapper">
+
+    <!-- START --- top minibar -->
+    <div class="variable-mini-bar">
+        <div>
+            <h4>Active Nozzles</h4>
+        </div>
+        <div>
+            <span *ngFor="let nozzle of activeNozzles" (click)="stepsSelector(nozzle)">{{nozzle}}</span>
+        </div>
+    </div>
+
+    <div class="variable-bottom-bar">
+        <div class="variable-left-mini-menu">
+            <div>
+                <h4>Variable Speed</h4>
+            </div>
+            <div>
+                <p *ngFor="let sp of variableSpeedSelector" (click)="stepsSelector(sp)">{{sp}} Horsepower</p>
+            </div>
+        </div>
+
+
+        <div class="variable-middle-menu">
+            <div class="gauge">
+                <img class="needle needle-left" src="../../../assets/images/needle.png" /> 
+                <img class="gauge-left" src="../../../assets/images/gauge NEW.png" />   
+            </div>
+            <div class="middle-buttons">
+                <p>GPM</p>
+                <p>PSI</p>
+            </div>
+            <div class="gauge">
+                <img class="needle needle-right" src="../../../assets/images/needle.png" /> 
+                <img class="gauge-right" src="../../../assets/images/gauge NEW.png" />  
+            </div>
+        </div>
+
+
+        <div class="variable-right-mini-menu">
+            <div>
+                <h4>Fixed Speed</h4>
+            </div>
+            <div>
+                <p *ngFor="let sp of fixedSpeedSelector" (click)="stepsSelector(sp)">{{sp}} Horsepower</p>
+            </div>
+        </div>
+    </div>
+</div>
