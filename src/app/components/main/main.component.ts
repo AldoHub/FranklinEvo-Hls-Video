@@ -86,7 +86,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   public isMoreInfoSelected:boolean = false;
   public buttonShouldDisplay: boolean = false;
   public currentCategory:string = "";
-  public timeouttime:number = 120000; //12000
+  public timeouttime:number = 1200000; //12000
   public isDesktop:boolean = true;
   public isMobile:boolean = false;
   public shouldShowSubmenu = false;
@@ -228,14 +228,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     //get the time
     let v_time:any = await this.dataService.getSectionVideoTime(this.categorySelected);
 
-  
-    //check if the category is "Variable Speed 2"
-    if(this.categorySelected == "Variable Speed 2"){
-      this.isVariableSpeed = true;
-    }else{
-      this.isVariableSpeed = false;
-    }
-
+    
+ 
   
     //load the video
     if(!this.isMobile){
@@ -250,7 +244,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       catTimer = setTimeout(() => {
         this.shouldDisableBtn = false;
         this.shouldShowSubmenu = true;
-        //--recent change
+
         //this.categoryVideoElement.pause();
         //console.log("CATEGORY VIDEO PAUSED");
       }, v_time);
@@ -332,6 +326,15 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.subCategoryVideo = categoryData["video"];
     this.videoDuration = categoryData["video_duration"];
     this.videoFrameStart = categoryData["video_frame_animation_start"];
+
+
+    //check if the category is "Variable Speed 2"
+    if(name == "Variable Speed 2"){
+      this.isVariableSpeed = true;
+    }else{
+      this.isVariableSpeed = false;
+    }
+
 
     //if theres a video already running?
     if(this.isSubVideoRunning){  
@@ -563,7 +566,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
   }
-
 
 
 

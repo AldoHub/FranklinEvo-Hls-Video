@@ -7,17 +7,23 @@
             <h4>Active Nozzles</h4>
         </div>
         <div>
-            <span *ngFor="let nozzle of activeNozzles" (click)="stepsSelector(nozzle)">{{nozzle}}</span>
+            <span [ngClass]="{'active-top': selectedItemTop === i}" *ngFor="let nozzle of activeNozzles, let i" (click)="configSelector(nozzle, i)">{{nozzle}}</span>
         </div>
     </div>
+    <!-- END --- top minibar -->
 
+
+    <img *ngIf="showCarsLayout" class="cars-layout-image" [src]="currentConfiguration.carsLayout" />
+
+
+    <!-- START --- bottom bar -->
     <div class="variable-bottom-bar">
         <div class="variable-left-mini-menu">
             <div>
                 <h4>Variable Speed</h4>
             </div>
             <div>
-                <p *ngFor="let sp of variableSpeedSelector" (click)="stepsSelector(sp)">{{sp}} Horsepower</p>
+                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="vSpeedSelector(sp, i)">{{sp}} Horsepower</p>
             </div>
         </div>
 
@@ -43,8 +49,9 @@
                 <h4>Fixed Speed</h4>
             </div>
             <div>
-                <p *ngFor="let sp of fixedSpeedSelector" (click)="stepsSelector(sp)">{{sp}} Horsepower</p>
+                <p *ngFor="let sp of fixedSpeedSelector" (click)="fSpeedSelector(sp)">{{sp}} Horsepower</p>
             </div>
         </div>
     </div>
+    <!-- END --- bottom bar -->
 </div>

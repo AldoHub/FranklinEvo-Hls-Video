@@ -83,7 +83,7 @@
     <!-- START --- content wrapper -->
     <div *ngIf="!isMenuActive">
         <div class="content-wrapper" *ngIf="isSectionSelected" [ngClass]="{'show-content' : contentShouldBeVisible}">
-            <div class="buttons-wrapper">
+            <div *ngIf="!isVariableSpeed" class="buttons-wrapper">
             <button (click)="openSubcategoryInfo()" [ngClass]="{'show-more-info' : buttonShouldDisplay}"><img src='../../assets/images/more-info.png'/> <span>More Information</span></button>
             <button (click)="replaySubcategoryVideo()" [ngClass]="{'show-replay' : buttonShouldDisplay}"><img src='../../assets/images/replay.png'/> <span style="margin-left:8px;">Replay</span></button>
             </div>

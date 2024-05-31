@@ -4,6 +4,9 @@
     height: 100%;
 }
 
+.variable-mini-bar {
+    position: relative;
+}
 
 .variable-mini-bar, .variable-left-mini-menu, .variable-right-mini-menu, .variable-middle-menu{
     margin: 0 auto;
@@ -12,6 +15,7 @@
     background: #000;
     color: #fff;
     text-align: center;
+    z-index: 10;
 }
 
 
@@ -32,19 +36,17 @@
     margin-left: auto;
     margin-right: auto;
     margin: auto;
-    left: 23px;
+    left: 0px;
     right: 0;
     top: 0;
     bottom: 30px;
     text-align: center;
     transition: all 1s ease-in-out;
+    transform: rotate(-110deg);
+    transform-origin: 58% 69.5%;
 }
 
 .needle-stage-one {
-    left: 44px;
-    right: 0;
-    top: 0;
-    bottom: 14px;
     transform: rotate(45deg);
 }
 
@@ -55,4 +57,18 @@
     position: absolute;
     width: 100%;
     bottom: 0px;
+}
+
+.cars-layout-image {
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    z-index: 0;
+}
+
+
+
+.active, .active-top {
+    background-color: #8cc63d;
+    color: #1f1f1f;
 }
