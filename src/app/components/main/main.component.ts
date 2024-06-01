@@ -188,6 +188,10 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   public async onCategorySelect(name:string, $event: Event, slug:string){
 
+
+    this.isVariableSpeed = false;
+
+
     clearTimeout(timer);
 
     if(this.isStarting){
@@ -334,6 +338,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     }else{
       this.isVariableSpeed = false;
     }
+
+    console.log("----> VARIABLE SPEED: ", this.isVariableSpeed);
 
 
     //if theres a video already running?

@@ -31,15 +31,15 @@
         <div class="variable-middle-menu">
             <div class="gauge">
                 <img class="needle needle-left" src="../../../assets/images/needle.png" /> 
-                <img class="gauge-left" src="../../../assets/images/gauge NEW.png" />   
+                <img class="gauge-left" [src]="selectedGauge" />   
             </div>
             <div class="middle-buttons">
-                <p>GPM</p>
-                <p>PSI</p>
+                <p (click)="unitsChange('gpm')">GPM</p>
+                <p (click)="unitsChange('psi')">PSI</p>
             </div>
             <div class="gauge">
                 <img class="needle needle-right" src="../../../assets/images/needle.png" /> 
-                <img class="gauge-right" src="../../../assets/images/gauge NEW.png" />  
+                <img class="gauge-right" [src]="selectedGauge" />  
             </div>
         </div>
 
@@ -49,7 +49,7 @@
                 <h4>Fixed Speed</h4>
             </div>
             <div>
-                <p *ngFor="let sp of fixedSpeedSelector" (click)="fSpeedSelector(sp)">{{sp}} Horsepower</p>
+                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="fSpeedSelector(sp, i)">{{sp}} Horsepower</p>
             </div>
         </div>
     </div>
