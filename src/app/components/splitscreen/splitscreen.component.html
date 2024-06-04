@@ -34,8 +34,11 @@
                 <img class="gauge-left" [src]="selectedGauge" />   
             </div>
             <div class="middle-buttons">
+                <!--
                 <p (click)="unitsChange('gpm')">GPM</p>
                 <p (click)="unitsChange('psi')">PSI</p>
+                -->
+                <p *ngFor="let u of units; let i" [ngClass]="{'active': selectedUnit === i}" (click)="unitsChange(u, i)">{{u | uppercase}}</p>
             </div>
             <div class="gauge">
                 <img class="needle needle-right" src="../../../assets/images/needle.png" /> 

@@ -12,12 +12,51 @@
     margin: 0 auto;
     display: block;
     width: 350px;
-    background: #000;
     color: #fff;
     text-align: center;
     z-index: 10;
+    font-size: 30px;
 }
 
+.variable-mini-bar h4, .variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4, .variable-mini-bar > div:last-of-type, .variable-left-mini-menu > div:last-of-type, .variable-right-mini-menu > div:last-of-type, .middle-buttons{
+    background: #1f1f1f;
+}
+
+.variable-mini-bar h4, .variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
+    color: #8cc63d;
+    font-weight: bold;
+    padding: 28px;
+    margin: 0px;
+}
+
+.variable-left-mini-menu > div:last-of-type > p, .variable-right-mini-menu > div:last-of-type > p ,.variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
+    padding: 26px;
+}
+
+.middle-buttons > p{
+    padding: 11px;
+}
+
+.variable-left-mini-menu > div:last-of-type > p, .variable-right-mini-menu > div:last-of-type > p, .middle-buttons > p {
+    margin: 0px;
+}
+
+.variable-mini-bar > div:last-of-type{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 8px;
+}
+
+.variable-mini-bar > div:last-of-type, .variable-left-mini-menu > div:last-of-type, .variable-right-mini-menu > div:last-of-type {
+    margin-top:4px;
+}
+
+
+.variable-mini-bar > div > span{
+    display: inline-block;
+    padding: 5px 16px;
+}
 
 .variable-middle-menu {
     width: 650px;

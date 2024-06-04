@@ -12,6 +12,7 @@ export class SplitscreenComponent implements OnInit {
   public selectedItem2:any = "";
   public selectedItemTop:any = "";
   public selectedGauge!:string;
+  public selectedUnit!: string;
   public currentMetric: string = 'gpm';
 
   //gauges
@@ -80,7 +81,10 @@ export class SplitscreenComponent implements OnInit {
       fpsi_2: 40,
       fpsi_4: 35
     }
-  ]
+  ];
+
+
+  public units: string[] = ["gpm", "psi"];
 
 
  
@@ -114,6 +118,7 @@ export class SplitscreenComponent implements OnInit {
 
     this.selectedItem = '2';
     this.selectedItem2 = '2';
+    this.selectedUnit = 'gpm';
    
   }
 
@@ -166,7 +171,12 @@ export class SplitscreenComponent implements OnInit {
   }
 
 
-  public unitsChange(unit: string){
+  public unitsChange(unit: string, index: string){
+    
+    console.log(index);
+
+    this.selectedUnit = index;
+
     this.selectedGauge = `${this.imagesFolder}${unit}.png`;
     this.currentMetric = unit;
     
