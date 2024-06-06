@@ -1,11 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { DataService } from "../../services/data.service";
 
 @Component({
   selector: 'app-splitscreen',
   templateUrl: './splitscreen.component.html',
   styleUrls: ['./splitscreen.component.css']
 })
-export class SplitscreenComponent implements OnInit {
+export class SplitscreenComponent implements OnInit, AfterViewInit {
+
+  constructor(private dataService: DataService){}
+  
+
+  @ViewChild('needleLeft', {static: true}) needleLeft!: ElementRef<HTMLElement>;
+  @ViewChild('needleRight', {static: true}) needleRight!: ElementRef<HTMLElement>;
+  
+
   public showCarsLayout:boolean = false; 
   public imagesFolder: string = "../../../assets/images/";
   public selectedItem:any = "";
@@ -14,9 +23,10 @@ export class SplitscreenComponent implements OnInit {
   public selectedGauge!:string;
   public selectedUnit!: string;
   public currentMetric: string = 'gpm';
-
+  public showWrapper: boolean = false;
+  public isInstructionsEnabled:boolean = false;
+ 
   //gauges
-  public numberOfMarkers = 9;
   public vgm!:number;  
   public fgm!:number;
 
@@ -37,58 +47,58 @@ export class SplitscreenComponent implements OnInit {
       configNumber: 2,
       carsLayout: `${this.imagesFolder}2.jpg`,
       vgpm_2: 10,
-      vgpm_4: 12,
+      vgpm_4: 10,
       fgpm_2: 11,
       fgpm_4: 14,
       vpsi_2: 30,
       vpsi_4: 30,
-      fpsi_2: 40,
-      fpsi_4: 35
+      fpsi_2: 34,
+      fpsi_4: 43
     },
     {
       configNumber: 4,
       carsLayout: `${this.imagesFolder}4.jpg`,
       vgpm_2: 10,
-      vgpm_4: 12,
+      vgpm_4: 10,
       fgpm_2: 10,
       fgpm_4: 12,
-      vpsi_2: 30,
-      vpsi_4: 30,
-      fpsi_2: 40,
-      fpsi_4: 35
+      vpsi_2: 31,
+      vpsi_4: 31,
+      fpsi_2: 32,
+      fpsi_4: 36
     },
     {
       configNumber: 6,
       carsLayout: `${this.imagesFolder}6.jpg`,
       vgpm_2: 10,
-      vgpm_4: 12,
+      vgpm_4: 10,
       fgpm_2: 9,
       fgpm_4: 10,
       vpsi_2: 30,
-      vpsi_4: 30,
-      fpsi_2: 40,
-      fpsi_4: 35
+      vpsi_4: 32,
+      fpsi_2: 30,
+      fpsi_4: 33
     },
     {
       configNumber: 8,
       carsLayout: `${this.imagesFolder}8.jpg`,
-      vgpm_2: 8,
+      vgpm_2: 9,
       vgpm_4: 10,
       fgpm_2: 8,
       fgpm_4: 9,
-      vpsi_2: 30,
-      vpsi_4: 30,
-      fpsi_2: 40,
-      fpsi_4: 35
+      vpsi_2: 31,
+      vpsi_4: 36,
+      fpsi_2: 26,
+      fpsi_4: 29
     }
   ];
 
+  //behavior subject
+  //public splitscreen: boolean = this.dataService.splitscreen;
 
   public units: string[] = ["gpm", "psi"];
-
-
  
-  public currentConfiguration:any = this.configurations[0];
+  public currentConfiguration:any = this.configurations[1];
 
   //dummy data
   public activeNozzles = ['2', '4', '6', '8'];
@@ -97,13 +107,14 @@ export class SplitscreenComponent implements OnInit {
 
   public configSelector(value: string, index: string){
     
+    //shows the speed menu
     this.selectedItemTop = index;
     
     this.configurations.map((c, i) => {
       if(this.configurations[i].configNumber == parseInt(value)){
-       //console.log(this.configurations[i]);
+        //console.log(this.configurations[i]);
         this.currentConfiguration = this.configurations[i];
-      
+     
         if(this.currentMetric == 'gpm'){
           this.setVariableSpeed(this.currentConfiguration.vgpm_2); 
           this.setFixedSpeed(this.currentConfiguration.fgpm_2);    
@@ -116,65 +127,50 @@ export class SplitscreenComponent implements OnInit {
       
     });
 
+    //selects the defaults for the bottom speeds menu
     this.selectedItem = '2';
     this.selectedItem2 = '2';
-    this.selectedUnit = 'gpm';
    
   }
 
-  //changes the value for the Variable gauge
-  public vSpeedSelector(value: string, index: string){
 
-    this.selectedItem = index;
+
+  public selectSpeeds(value: string, index: string){
+    
+    //--- tie the selectors, both will act on click
     //depending on the current metric do the calcs needed
-
     if(this.currentMetric == 'gpm'){
       if(value == '2'){
         this.setVariableSpeed(this.currentConfiguration.vgpm_2);
+        this.setFixedSpeed(this.currentConfiguration.fgpm_2);
+
       }else{
+        //use 4hp data
         this.setVariableSpeed(this.currentConfiguration.vgpm_4);
+        this.setFixedSpeed(this.currentConfiguration.fgpm_4);
       }
-    }else{
+    }else{ 
       if(value == '2'){
         this.setVariableSpeed(this.currentConfiguration.vpsi_2);
+        this.setFixedSpeed(this.currentConfiguration.fpsi_2);
+      
       }else{
+        //use 4hp data
         this.setVariableSpeed(this.currentConfiguration.vpsi_4);
+        this.setFixedSpeed(this.currentConfiguration.fpsi_4);
+
       }
     }
 
-   
-    
-    
-  }
+    //select the correct option
+    this.selectedItem = index;
+    this.selectedItem2 = index;
 
-  //changes the value for the Fixed gauge
-  public fSpeedSelector(value: string, index: string){
-   
-     //depending on the current metric do the calcs needed
-     this.selectedItem2= index;
-
-     if(this.currentMetric == 'gpm'){
-       if(value == '2'){
-         this.setFixedSpeed(this.currentConfiguration.fgpm_2);
-       }else{
-         this.setFixedSpeed(this.currentConfiguration.fgpm_4);
-       }
-     }else{
-      if(value == '2'){
-        this.setFixedSpeed(this.currentConfiguration.fpsi_2);  
-      }else{
-        this.setFixedSpeed(this.currentConfiguration.fpsi_4);  
-      }
-    }
-  
-   
   }
 
 
   public unitsChange(unit: string, index: string){
-    
-    console.log(index);
-
+  
     this.selectedUnit = index;
 
     this.selectedGauge = `${this.imagesFolder}${unit}.png`;
@@ -192,67 +188,78 @@ export class SplitscreenComponent implements OnInit {
       this.setFixedSpeed(this.currentConfiguration.fpsi_2);  
     }
     
+
   }
 
+  //**** --- each gauge marker is 13.5 degrees aprox */
 
   //--- calc gauge rotation
-  public setVariableSpeed(value: any){
-    /*
-    //**** --- each gauge marker is 26 degrees aprox */
-       
-    let defaultDegrees = (12 * value) - 110;
-    let removeMarkers = defaultDegrees / this.numberOfMarkers;
+  public setVariableSpeed(value: string){
+    console.log("VARIABLE VALUE: ", value);
+    
+    let calc!: number;
     
     if(this.currentMetric == 'gpm'){
-     
-      let correction = removeMarkers + 22;
-      this.vgm = parseInt(correction.toFixed(0));
+      calc = (13.5 * parseInt(value)) - 110;
+    }else{
+      calc = (13.5 * parseInt(value) / 3) - 110;
+    }
+
+    this.vgm = calc;
+
+    //set the rotation
+    this.needleLeft.nativeElement.setAttribute('style', 'transform:rotate('+ this.vgm +'deg)');
+
+  }
+
+
+  public setFixedSpeed(value: string){
+    console.log("FIXED VALUE: ", value);
+    
+    let calc!: number;
+    
+    if(this.currentMetric == 'gpm'){
+      calc = (13.5 * parseInt(value)) - 110;
+    }else{
+      calc = (13.5 * parseInt(value) / 3) - 110;
+    }
+
+    this.fgm = calc;
+
+    //set the rotation
+    this.needleRight.nativeElement.setAttribute('style', 'transform:rotate('+ this.fgm +'deg)');
+
+  }
   
-      
-    }else{
-      let correction = removeMarkers;
-      this.vgm = parseInt(correction.toFixed(0));
-    }
-
-    //set rotation value
-    let d:any = document.querySelector(".needle-left");
-    d.style.transform = 'rotate('+ this.vgm +'deg)';
-
-    console.log("SET VSPEED TO: ", this.vgm);
-
+  public toggleInstructions(){
+    this.isInstructionsEnabled = !this.isInstructionsEnabled;
   }
 
-
-  public setFixedSpeed(value: any){
- 
-    let defaultDegrees = (12 * value) - 110;
-    let removeMarkers = defaultDegrees / this.numberOfMarkers;
-    
-    if(this.currentMetric == 'gpm'){
-      let correction = removeMarkers + 22;
-      this.fgm = parseInt(correction.toFixed(0));
-      
-    }else{
-      let correction = removeMarkers;
-      this.fgm = parseInt(correction.toFixed(0));
-    }
-
-    //set rotation value
-    let d:any = document.querySelector(".needle-right");
-    d.style.transform = 'rotate('+ this.fgm +'deg)';
-
-    console.log("SET FSPEED TO: ", this.fgm);
-  }
- 
 
   ngOnInit(): void {
     this.selectedGauge = `${this.imagesFolder}gpm.png`;
-    setTimeout(() => {
-    this.showCarsLayout = true;
-    }, 4500);
   }
 
+  ngAfterViewInit(): void{
+    /*
+    setTimeout(() => {
+      //this.showCarsLayout = true;
+      this.showWrapper = true;
+      this.selectedUnit = 'gpm';
+      this.configSelector('2', '2');
+      }, 4500);
+  
+      */
 
+      this.dataService.splitscreenSubject.subscribe(val => {
+        if(val){
+            this.showCarsLayout = true;
+            this.showWrapper = true;
+            this.selectedUnit = 'gpm';
+            this.configSelector('2', '2'); 
+        }
+      })
+  }
 
 
 }

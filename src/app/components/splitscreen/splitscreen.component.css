@@ -2,7 +2,65 @@
     position: absolute;
     width: 100%;
     height: 100%;
+    opacity: 0;
+    transition: all 1s ease-in-out;
 }
+
+.variable-container-wrapper.show-container-wrapper {
+    opacity: 1;
+}
+
+
+.intructions-toggle, .close-instructions {
+    width: 106px;
+    height: 94px;
+    background: #1f1f1f;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.close-instructions {
+    background: rgba(0,0,0,0.9);
+}
+
+.instructions-content-wrapper {
+    width: 90%;
+    z-index: 99;
+    background: rgba(0,0,0,0.9);
+    position: absolute;
+    height: 100%;
+    right: 0px;
+    animation: slideIn 1s forwards;
+}
+
+.instruction-steps {
+    color: #fff;
+    padding: 16em 13em;
+}
+
+.instruction-steps h4 {
+    font-size: 2em;
+    color: #8cc63d;
+}
+
+.instructions-step-title {
+    font-weight: 900;
+    font-size: 1.2em;
+    margin: 0px;
+    padding: 0px;
+}
+
+.instructions-step-content {
+    padding: 0px;
+    margin: 0em 0em 1.7em 0em;
+    line-height: 1.6em;
+}
+
 
 .variable-mini-bar {
     position: relative;
@@ -29,8 +87,10 @@
     margin: 0px;
 }
 
+
+
 .variable-left-mini-menu > div:last-of-type > p, .variable-right-mini-menu > div:last-of-type > p ,.variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
-    padding: 26px;
+    padding: 22px;
 }
 
 .middle-buttons > p{
@@ -40,6 +100,7 @@
 .variable-left-mini-menu > div:last-of-type > p, .variable-right-mini-menu > div:last-of-type > p, .middle-buttons > p {
     margin: 0px;
 }
+
 
 .variable-mini-bar > div:last-of-type{
     display: flex;
@@ -65,6 +126,15 @@
     align-items: center;
     background: transparent;
 }
+
+
+
+
+.variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4, .variable-left-mini-menu > div:last-of-type, .variable-right-mini-menu > div:last-of-type{
+    font-size: 25px;
+}
+
+
 
 .gauge {
     position: relative;
@@ -96,6 +166,8 @@
     position: absolute;
     width: 100%;
     bottom: 0px;
+    /*opacity: 0;
+    transition: all 300ms ease-in-out;*/
 }
 
 .cars-layout-image {
@@ -103,11 +175,119 @@
     position: absolute;
     top: 0px;
     z-index: 0;
+    height: auto;
+    max-height: 100%;
 }
 
 
-
-.active, .active-top {
+.active, .active-top, .variable-left-mini-menu > div:last-of-type > p:hover, .variable-right-mini-menu > div:last-of-type > p:hover, .middle-buttons > p:hover, .variable-mini-bar > div > span:hover {
     background-color: #8cc63d;
     color: #1f1f1f;
+}
+
+.variable-left-mini-menu > div:last-of-type > p:hover, .variable-right-mini-menu > div:last-of-type > p:hover, .middle-buttons > p:hover, .variable-mini-bar > div > span:hover {
+    cursor: pointer;
+}
+
+
+@keyframes slideIn {
+    0% {
+      opacity: 0;
+      transform: translateX(700px); 
+    }
+    100% {
+        opacity: 1;
+      transform: translateX(0); 
+    }
+}
+
+
+@media screen and (max-width: 1200px){
+    .intructions-toggle, .close-instructions {
+        width: 80px;
+        height: 70px;
+    }
+
+    .variable-mini-bar {
+        display: flex;
+        font-size: 16px;
+        padding: 0px;
+    }
+
+    .variable-mini-bar > div:last-of-type, .variable-left-mini-menu > div:last-of-type, .variable-right-mini-menu > div:last-of-type {
+        margin-top:0px;
+    }
+
+    .variable-mini-bar h4, .variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
+        padding: 15px;
+        margin: 0px;
+    }
+  
+    .variable-left-mini-menu, .variable-right-mini-menu{
+        width: 250px;
+        font-size: 20px;
+    }
+
+}
+
+@media screen and (max-width:990px){
+
+    
+    .variable-bottom-bar {
+        background: #1f1f1f;
+    }
+
+    .variable-left-mini-menu > div:last-of-type > p, .variable-right-mini-menu > div:last-of-type > p, .middle-buttons > p {
+        font-size: 15px;
+    }
+
+    .variable-left-mini-menu, .variable-right-mini-menu {
+        display: flex;
+        margin: 0px;
+        width: auto;
+        font-size: 12px;
+    }
+
+    .variable-left-mini-menu > div:last-of-type, .variable-right-mini-menu > div:last-of-type {
+        display: flex;
+    }
+
+    
+    .variable-mini-bar h4, .variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
+        padding: 14px;
+        max-width: 90px;
+    }
+
+
+    .variable-left-mini-menu > div:last-of-type > p, .variable-right-mini-menu > div:last-of-type > p ,.variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
+        padding: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .variable-middle-menu {
+        position: absolute;
+        justify-content: center;
+        width: auto;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        width: 100px;
+    }
+
+
+    .gauge {
+        transform: scale(0.5);
+        pointer-events: none;
+    }
+  
+    .gauge:first-of-type {
+        margin-right: -114px;
+    }
+
+    .middle-buttons {
+        position: absolute;
+        top: -40px;
+    }
 }

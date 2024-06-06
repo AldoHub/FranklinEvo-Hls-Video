@@ -89,12 +89,17 @@
             </div>
 
             <!-- START --- subcategories menu -->
-            <div *ngIf="!isVariableSpeed" class="inner-content-wrapper">
+            <!-- *ngIf="!isVariableSpeed" -->
+            <div class="inner-content-wrapper">
+               
                 <div class="submenu-wrapper" *ngIf="shouldShowSubmenu">
+                    <div class="minimize-menu-toggle" [ngClass]="{'opened-up' : !shouldMinimizeSubmenu}" (click)="minimizeSubMenu()"><img src='../../../assets/images/arrow_up.png' /></div>
+                    <div *ngIf="!shouldMinimizeSubmenu">
                     <div class="subcategory-title"><p>{{categorySelected}}</p></div>
                     <div class="submenu-item" *ngFor="let subcategory of subcategories | async; let i = index" [ngClass]="{'disabled-subcategory-title' : shouldDisableBtn}">
                         <p [ngClass]="{'active': selectedItem === i}" (click)="onSubCategorySelect(subcategory, i)" class="section-title"><span class="rectangle" [ngClass]="{'active-rectangle': selectedItem === i}"></span><span>{{subcategory}}</span></p>
                     </div>
+                </div>
                 </div>
             
                 <div class="subcategory-content-wrapper" *ngIf="isMoreInfoSelected">
@@ -103,13 +108,22 @@
                     <div [innerHTML]="data"></div>   
                 </div>
                 </div>
+
+                
+                <!-- START --- splitscreen -->   
+                <app-splitscreen style="left: 0;
+                position: absolute;
+                display: block;
+                width: 100%;
+                height: 100%;" *ngIf="isVariableSpeed"></app-splitscreen>
+                <!-- END --- splitscreen -->   
             </div>
             <!-- END --- subcategories menu -->
 
-
-            <!-- START --- splitscreen -->   
-            <app-splitscreen *ngIf="isVariableSpeed"></app-splitscreen>
-            <!-- END --- splitscreen -->   
+   
+                <!-- START --- splitscreen -->   
+                <!--<app-splitscreen *ngIf="isVariableSpeed"></app-splitscreen>-->
+                <!-- END --- splitscreen -->   
 
         </div>
     </div>

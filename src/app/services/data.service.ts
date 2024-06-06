@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, lastValueFrom, of } from "rxjs";
+import { Observable, lastValueFrom, of, BehaviorSubject, Subject } from "rxjs";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
@@ -10,6 +10,7 @@ export class DataService {
 
   public config!:Observable<any>;
 
+  public splitscreenSubject: Subject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     private httpClient: HttpClient

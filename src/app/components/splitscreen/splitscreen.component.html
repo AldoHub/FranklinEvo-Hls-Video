@@ -1,5 +1,28 @@
 
-<div class="variable-container-wrapper">
+<div [ngClass]="{'show-container-wrapper': showWrapper}" class="variable-container-wrapper">
+    <div (click)="toggleInstructions()" class="intructions-toggle">
+        <img src='../../../assets/images/instructions-info.png' />
+    </div>
+
+    <!-- instructions -->
+    <div *ngIf="isInstructionsEnabled" class="instructions-content-wrapper">
+        <div class="instructions-content">
+            <div (click)="toggleInstructions()" class="close-instructions"><img src='../../../assets/images/close-green.png' /></div>
+            <div class="instruction-steps">
+
+                <h4>Instructions</h4>    
+
+                <p class="instructions-step-title">Step 1</p>
+                <p class="instructions-step-content">Compare the Flow Rate for Variable Speed and Fixed Speed of the active nozzles in the gauges at the bottom.</p>
+                <p class="instructions-step-title">Step 2</p>
+                <p class="instructions-step-content">Select the amount of Active Nozzles at the top center, choose the unit of measurement you are looking for in the center (GPM, or PSI), and toggle between the different options for Variable, and Fixed speed on the bottom left and right.
+                </p>
+                <p class="instructions-step-title">Step 3</p>
+                <p class="instructions-step-content">If the needle is in the green, then you are within the optimum flow rate range. Yellow represents a weak flow, and red represents too much flow pressure.</p>
+            </div>   
+        </div>
+    </div>
+
 
     <!-- START --- top minibar -->
     <div class="variable-mini-bar">
@@ -23,25 +46,21 @@
                 <h4>Variable Speed</h4>
             </div>
             <div>
-                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="vSpeedSelector(sp, i)">{{sp}} Horsepower</p>
+                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} Horsepower</p>
             </div>
         </div>
 
 
         <div class="variable-middle-menu">
             <div class="gauge">
-                <img class="needle needle-left" src="../../../assets/images/needle.png" /> 
+                <img #needleLeft class="needle needle-left" src="../../../assets/images/needle.png" /> 
                 <img class="gauge-left" [src]="selectedGauge" />   
             </div>
             <div class="middle-buttons">
-                <!--
-                <p (click)="unitsChange('gpm')">GPM</p>
-                <p (click)="unitsChange('psi')">PSI</p>
-                -->
                 <p *ngFor="let u of units; let i" [ngClass]="{'active': selectedUnit === i}" (click)="unitsChange(u, i)">{{u | uppercase}}</p>
             </div>
             <div class="gauge">
-                <img class="needle needle-right" src="../../../assets/images/needle.png" /> 
+                <img #needleRight class="needle needle-right" src="../../../assets/images/needle.png" /> 
                 <img class="gauge-right" [src]="selectedGauge" />  
             </div>
         </div>
@@ -52,7 +71,7 @@
                 <h4>Fixed Speed</h4>
             </div>
             <div>
-                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="fSpeedSelector(sp, i)">{{sp}} Horsepower</p>
+                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} Horsepower</p>
             </div>
         </div>
     </div>

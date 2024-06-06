@@ -116,7 +116,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   //variable speed
   public isVariableSpeed: boolean = false;
-
+  public shouldMinimizeSubmenu:boolean = false;
 
   public checkWindowSize(innerwidth: number){
     if(innerwidth <= 579){
@@ -332,15 +332,12 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.videoFrameStart = categoryData["video_frame_animation_start"];
 
 
-    //check if the category is "Variable Speed 2"
     if(name == "Variable Speed 2"){
       this.isVariableSpeed = true;
     }else{
       this.isVariableSpeed = false;
+      this.dataService.splitscreenSubject.next(this.isVariableSpeed);
     }
-
-    console.log("----> VARIABLE SPEED: ", this.isVariableSpeed);
-
 
     //if theres a video already running?
     if(this.isSubVideoRunning){  
@@ -355,7 +352,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       
       //get previous video data
       let oldData:any = await this.dataService.getCategoryData(this.subCategorySelected);
-     
+      
       //get the current time of the vimeo player
       let currTime = this.subCategoryVideoElement.currentTime;
       if(currTime && (currTime < (Math.floor((oldData["video_duration"]/ 1000))))){
@@ -366,8 +363,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.subCategoryVideoElement.play();
     
     }else{
-     
-     
+      
+      
       //console.log("loding subcategory video: ", this.subCategoryVideo);
       this.loadVideos("subcategory", this.subCategoryVideo)
       //show subcategory video
@@ -375,7 +372,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       //set it to have a video running - for the queue
       this.isSubVideoRunning = true;
       this.isVimeoLoading = false;
-     
+      
       //set the timer for the subcategory video
       timer = setTimeout(async () => {
         //this.idleVideoElement.pause();
@@ -383,10 +380,10 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
         //this.subCategoryVideoElement.pause();
         //this.isVideoPaused.next(true);
         //console.log("SUBCATERGORY VIDEO PAUSED");
+      
       }, Math.floor(this.videoDuration))
   
     }
-
    
     this.subCategorySelected = name;
     this.breadcrumbSubCat = name;
@@ -502,9 +499,15 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     
   }
 
+  public minimizeSubMenu() {
+    this.shouldMinimizeSubmenu = !this.shouldMinimizeSubmenu;
+  }
+
+
   //--- AFTERVIEWINIT
   async ngAfterViewInit(): Promise<any>{
 
+    this.shouldMinimizeSubmenu = true;
    
     //-- DEFINE THE PLAYERS 
     this.idleVideoElement = this.idleVideoNew?.nativeElement;
@@ -536,6 +539,10 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
             timer = setTimeout(async () => {
               this.subCategoryVideoElement.pause();
               this.isVideoPaused.next(true);
+
+              if(this.isVariableSpeed){
+                this.dataService.splitscreenSubject.next(this.isVariableSpeed);
+              }
               
             }, Math.floor(this.videoDuration))
           }
