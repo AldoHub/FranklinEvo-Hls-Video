@@ -1,14 +1,19 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit, OnDestroy, AfterContentInit } from '@angular/core';
 import { DataService } from "../../services/data.service";
+import { SplitscreenService } from '../../services/splitscreen.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-splitscreen',
   templateUrl: './splitscreen.component.html',
   styleUrls: ['./splitscreen.component.css']
 })
-export class SplitscreenComponent implements OnInit, AfterViewInit {
+export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContentInit ,OnDestroy {
 
-  constructor(private dataService: DataService){}
+  constructor(
+    private dataService: DataService, 
+    private splitscreenService: SplitscreenService)
+    {}
   
 
   @ViewChild('needleLeft', {static: true}) needleLeft!: ElementRef<HTMLElement>;
@@ -25,10 +30,16 @@ export class SplitscreenComponent implements OnInit, AfterViewInit {
   public currentMetric: string = 'gpm';
   public showWrapper: boolean = false;
   public isInstructionsEnabled:boolean = false;
+  public isDesktop:boolean = false;
+  public instructions!:string;
  
   //gauges
   public vgm!:number;  
   public fgm!:number;
+
+
+  public splitscreensubscription!:Subscription;
+  public isMobileSubscription!: Subscription;
 
   public configurations = [
     {
@@ -93,11 +104,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit {
     }
   ];
 
-  //behavior subject
-  //public splitscreen: boolean = this.dataService.splitscreen;
-
   public units: string[] = ["gpm", "psi"];
- 
   public currentConfiguration:any = this.configurations[1];
 
   //dummy data
@@ -241,25 +248,40 @@ export class SplitscreenComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void{
-    /*
-    setTimeout(() => {
-      //this.showCarsLayout = true;
-      this.showWrapper = true;
-      this.selectedUnit = 'gpm';
-      this.configSelector('2', '2');
-      }, 4500);
-  
-      */
-
-      this.dataService.splitscreenSubject.subscribe(val => {
-        if(val){
-            this.showCarsLayout = true;
-            this.showWrapper = true;
-            this.selectedUnit = 'gpm';
-            this.configSelector('2', '2'); 
-        }
-      })
+    //do something   
   }
 
+  ngAfterContentInit(): void {
+    this.splitscreensubscription = this.dataService.splitscreenSubject.subscribe(val => {
+      if(val){
+      
+          this.showCarsLayout = true;
+          this.showWrapper = true;
+          this.selectedUnit = 'gpm';
+          this.configSelector('2', '2'); 
+        
+          }
+    });
+
+    this.isMobileSubscription = this.dataService.isDesktopCheck.subscribe(val => {
+      this.isDesktop = val;
+    });
+
+    this.splitscreenService.splitData.subscribe( instructions => {
+      this.instructions = instructions;
+    })
+
+  }
+
+
+  ngOnDestroy(): void {
+      this.showWrapper = false;
+      if(this.splitscreensubscription){
+        this.splitscreensubscription.unsubscribe();
+        this.isMobileSubscription.unsubscribe();
+
+      }
+      
+  }
 
 }

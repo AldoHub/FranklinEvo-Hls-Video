@@ -89,11 +89,10 @@
             </div>
 
             <!-- START --- subcategories menu -->
-            <!-- *ngIf="!isVariableSpeed" -->
             <div class="inner-content-wrapper">
-               
                 <div class="submenu-wrapper" *ngIf="shouldShowSubmenu">
-                    <div class="minimize-menu-toggle" [ngClass]="{'opened-up' : !shouldMinimizeSubmenu}" (click)="minimizeSubMenu()"><img src='../../../assets/images/arrow_up.png' /></div>
+                    <div *ngIf="isVariableSpeed" class="minimize-menu-toggle" [ngClass]="{'opened-up' : !shouldMinimizeSubmenu}" (click)="minimizeSubMenu()"><img src='../../../assets/images/arrow_up.png' /></div>
+                    
                     <div *ngIf="!shouldMinimizeSubmenu">
                     <div class="subcategory-title"><p>{{categorySelected}}</p></div>
                     <div class="submenu-item" *ngFor="let subcategory of subcategories | async; let i = index" [ngClass]="{'disabled-subcategory-title' : shouldDisableBtn}">
@@ -119,11 +118,6 @@
                 <!-- END --- splitscreen -->   
             </div>
             <!-- END --- subcategories menu -->
-
-   
-                <!-- START --- splitscreen -->   
-                <!--<app-splitscreen *ngIf="isVariableSpeed"></app-splitscreen>-->
-                <!-- END --- splitscreen -->   
 
         </div>
     </div>

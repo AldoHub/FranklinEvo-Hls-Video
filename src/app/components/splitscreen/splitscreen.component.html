@@ -8,8 +8,9 @@
     <div *ngIf="isInstructionsEnabled" class="instructions-content-wrapper">
         <div class="instructions-content">
             <div (click)="toggleInstructions()" class="close-instructions"><img src='../../../assets/images/close-green.png' /></div>
-            <div class="instruction-steps">
+            <div [innerHTML]="instructions" class="instruction-steps">
 
+               <!--
                 <h4>Instructions</h4>    
 
                 <p class="instructions-step-title">Step 1</p>
@@ -19,6 +20,7 @@
                 </p>
                 <p class="instructions-step-title">Step 3</p>
                 <p class="instructions-step-content">If the needle is in the green, then you are within the optimum flow rate range. Yellow represents a weak flow, and red represents too much flow pressure.</p>
+            -->
             </div>   
         </div>
     </div>
@@ -46,7 +48,7 @@
                 <h4>Variable Speed</h4>
             </div>
             <div>
-                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} Horsepower</p>
+                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} <span *ngIf="isDesktop">Horsepower</span> <span *ngIf="!isDesktop">Hp</span></p>
             </div>
         </div>
 
@@ -71,7 +73,7 @@
                 <h4>Fixed Speed</h4>
             </div>
             <div>
-                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} Horsepower</p>
+                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} <span *ngIf="isDesktop">Horsepower</span> <span *ngIf="!isDesktop">Hp</span> </p>
             </div>
         </div>
     </div>

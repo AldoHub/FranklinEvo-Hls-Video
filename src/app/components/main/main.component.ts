@@ -1,5 +1,6 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
 import { DataService } from '../../services/data.service';
+import { SplitscreenService } from '../../services/splitscreen.service';
 import { BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import Hls from 'hls.js';
@@ -19,6 +20,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   constructor(
     private dataService: DataService,
+    private splitscreenService: SplitscreenService,
   ){
     this._setTimeout();
     this.userInactive.subscribe(() => {
@@ -123,14 +125,23 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.isMobile = true;
       this.isDesktop = false;
       this.shouldShowSubmenu = false;
+
+      //mobile check needed for the splitscreen options
+      this.dataService.isDesktopCheck.next(this.isDesktop);
     }
     else if(innerwidth >= 580 && innerWidth <= 1200){
       this.isMobile = false;
       this.isDesktop = false;
+
+      //mobile check needed for the splitscreen options
+      this.dataService.isDesktopCheck.next(this.isDesktop);
       //this.shouldShowSubmenu = true;
     }else{
       this.isMobile = false;
       this.isDesktop = true;
+
+      //mobile check needed for the splitscreen options
+      this.dataService.isDesktopCheck.next(this.isDesktop);
       //this.shouldShowSubmenu = true;
     }
   }
@@ -190,7 +201,11 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
 
     this.isVariableSpeed = false;
+    this.shouldMinimizeSubmenu = false;
 
+    this.dataService.splitscreenSubject.next(false);
+
+    console.log("ISVARIABLESPEED: ", this.isVariableSpeed)
 
     clearTimeout(timer);
 
@@ -333,11 +348,17 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
 
     if(name == "Variable Speed 2"){
-      this.isVariableSpeed = true;
+      this.isVariableSpeed = true;     
+      this.shouldMinimizeSubmenu = true;
+      this.splitscreenService.splitData.next(this.data);
     }else{
       this.isVariableSpeed = false;
-      this.dataService.splitscreenSubject.next(this.isVariableSpeed);
+      this.shouldMinimizeSubmenu = false;
+      //this.splitscreenService.splitData.next('');
+      this.dataService.splitscreenSubject.next(false);
     }
+
+    console.log("ISVARIABLESPEED: ", this.isVariableSpeed)
 
     //if theres a video already running?
     if(this.isSubVideoRunning){  
@@ -507,7 +528,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   //--- AFTERVIEWINIT
   async ngAfterViewInit(): Promise<any>{
 
-    this.shouldMinimizeSubmenu = true;
+    
    
     //-- DEFINE THE PLAYERS 
     this.idleVideoElement = this.idleVideoNew?.nativeElement;

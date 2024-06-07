@@ -165,7 +165,7 @@
     },
     {
       "name": "Variable Speed 2",
-      "description": "",
+      "description": "<div class=''><div><img src='./assets/images/c7.jpg' /></div></div>",
       "video": "../assets/videos/Variable_Speed_Sequence_v3.mp4.m3u8",
       "video_duration": "4500",
       "video_frame_animation_start": "4"

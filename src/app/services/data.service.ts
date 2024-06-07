@@ -9,19 +9,17 @@ import { map } from 'rxjs/operators';
 export class DataService {
 
   public config!:Observable<any>;
-
   public splitscreenSubject: Subject<boolean> = new BehaviorSubject<boolean>(false);
+  public isDesktopCheck: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(
     private httpClient: HttpClient
   ) {
-      //read the file when the service loads 
-     this.config = this.httpClient.get<any>('./assets/categories.json', {headers: new HttpHeaders({'Content-Type': 'application/json'})});
-      //this.config = this.httpClient.get<any>('http://franklinevo.clientdemos.net/wp/wp-content/uploads/2023/09/categories.json');
-      //this.config = this.httpClient.get<any>('http://franklinwp.clientdemos.net/wp-content/uploads/2023/09/categories.json');
-     //this.config = this.httpClient.get<any>('https://www.franklinfueling.com/wp-content/uploads/2023/09/categories.json');
-    
-     
+     //read the file when the service loads 
+    this.config = this.httpClient.get<any>('./assets/categories.json', {headers: new HttpHeaders({'Content-Type': 'application/json'})});
+    //this.config = this.httpClient.get<any>('http://franklinevo.clientdemos.net/wp/wp-content/uploads/2023/09/categories.json');
+    //this.config = this.httpClient.get<any>('http://franklinwp.clientdemos.net/wp-content/uploads/2023/09/categories.json');
+    //this.config = this.httpClient.get<any>('https://www.franklinfueling.com/wp-content/uploads/2023/09/categories.json'); 
    }
 
   //---- populates the subcategories or each main section/category
