@@ -42,18 +42,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
   public isMobileSubscription!: Subscription;
 
   public configurations = [
-    {
-      configNumber: 0,
-      carsLayout: `${this.imagesFolder}bg_no_cars.jpg`,
-      vgpm_2: 0,
-      vgpm_4: 0,
-      fgpm_2: 0,
-      fgpm_4: 0,
-      vpsi_2: 0,
-      vpsi_4: 0,
-      fpsi_2: 0,
-      fpsi_4: 0
-    },
+    
     {
       configNumber: 2,
       carsLayout: `${this.imagesFolder}2.jpg`,
@@ -121,15 +110,8 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
       if(this.configurations[i].configNumber == parseInt(value)){
         //console.log(this.configurations[i]);
         this.currentConfiguration = this.configurations[i];
-     
-        if(this.currentMetric == 'gpm'){
-          this.setVariableSpeed(this.currentConfiguration.vgpm_2); 
-          this.setFixedSpeed(this.currentConfiguration.fgpm_2);    
-        }else{
-          this.setVariableSpeed(this.currentConfiguration.vpsi_2);  
-          this.setFixedSpeed(this.currentConfiguration.fpsi_2);  
-        }
-      
+        this.setSpeeds("2", this.currentConfiguration);
+
       }
       
     });
@@ -146,28 +128,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
     
     //--- tie the selectors, both will act on click
     //depending on the current metric do the calcs needed
-    if(this.currentMetric == 'gpm'){
-      if(value == '2'){
-        this.setVariableSpeed(this.currentConfiguration.vgpm_2);
-        this.setFixedSpeed(this.currentConfiguration.fgpm_2);
-
-      }else{
-        //use 4hp data
-        this.setVariableSpeed(this.currentConfiguration.vgpm_4);
-        this.setFixedSpeed(this.currentConfiguration.fgpm_4);
-      }
-    }else{ 
-      if(value == '2'){
-        this.setVariableSpeed(this.currentConfiguration.vpsi_2);
-        this.setFixedSpeed(this.currentConfiguration.fpsi_2);
-      
-      }else{
-        //use 4hp data
-        this.setVariableSpeed(this.currentConfiguration.vpsi_4);
-        this.setFixedSpeed(this.currentConfiguration.fpsi_4);
-
-      }
-    }
+    this.setSpeeds(value, this.currentConfiguration);
 
     //select the correct option
     this.selectedItem = index;
@@ -182,38 +143,51 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
 
     this.selectedGauge = `${this.imagesFolder}${unit}.png`;
     this.currentMetric = unit;
-    
-    //select first item
-    this.selectedItem = '2'; //select first
-    this.selectedItem2 = '2' //select first
-
-    if(this.currentMetric == 'gpm'){
-      this.setVariableSpeed(this.currentConfiguration.vgpm_2);
-      this.setFixedSpeed(this.currentConfiguration.fgpm_2);  
-    }else{
-      this.setVariableSpeed(this.currentConfiguration.vpsi_2);  
-      this.setFixedSpeed(this.currentConfiguration.fpsi_2);  
-    }
-    
+  
+    this.setSpeeds(index, this.currentConfiguration);
 
   }
+
+
+
+  //TODO ---- unify all speed changes into one function, taking into account the unit mode
+  public setSpeeds(hp: string, config: any ){
+    
+    console.log(hp, config); 
+    if(this.currentMetric == 'gpm'){
+      if(hp == '2'){
+        this.setVariableSpeed(this.currentConfiguration.vgpm_2);
+        this.setFixedSpeed(this.currentConfiguration.fgpm_2);
+
+      }else{
+        //use 4hp data
+        this.setVariableSpeed(this.currentConfiguration.vgpm_4);
+        this.setFixedSpeed(this.currentConfiguration.fgpm_4);
+      }
+    }else{ 
+      if(hp == '2'){
+        this.setVariableSpeed(this.currentConfiguration.vpsi_2);
+        this.setFixedSpeed(this.currentConfiguration.fpsi_2);
+      
+      }else{
+        //use 4hp data
+        this.setVariableSpeed(this.currentConfiguration.vpsi_4);
+        this.setFixedSpeed(this.currentConfiguration.fpsi_4);
+
+      }
+    }
+   
+  }
+
+
 
   //**** --- each gauge marker is 13.5 degrees aprox */
 
   //--- calc gauge rotation
   public setVariableSpeed(value: string){
-    console.log("VARIABLE VALUE: ", value);
-    
-    let calc!: number;
-    
-    if(this.currentMetric == 'gpm'){
-      calc = (13.5 * parseInt(value)) - 110;
-    }else{
-      calc = (13.5 * parseInt(value) / 3) - 110;
-    }
 
+    let calc = this.calculateRotation(value);
     this.vgm = calc;
-
     //set the rotation
     this.needleLeft.nativeElement.setAttribute('style', 'transform:rotate('+ this.vgm +'deg)');
 
@@ -221,8 +195,16 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
 
 
   public setFixedSpeed(value: string){
-    console.log("FIXED VALUE: ", value);
-    
+   
+    let calc = this.calculateRotation(value);
+    this.fgm = calc;
+    //set the rotation
+    this.needleRight.nativeElement.setAttribute('style', 'transform:rotate('+ this.fgm +'deg)');
+
+  }
+  
+
+  public calculateRotation(value:string){
     let calc!: number;
     
     if(this.currentMetric == 'gpm'){
@@ -231,13 +213,11 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
       calc = (13.5 * parseInt(value) / 3) - 110;
     }
 
-    this.fgm = calc;
-
-    //set the rotation
-    this.needleRight.nativeElement.setAttribute('style', 'transform:rotate('+ this.fgm +'deg)');
-
+    return calc;
   }
-  
+
+
+
   public toggleInstructions(){
     this.isInstructionsEnabled = !this.isInstructionsEnabled;
   }

@@ -199,13 +199,12 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   public async onCategorySelect(name:string, $event: Event, slug:string){
 
-
     this.isVariableSpeed = false;
     this.shouldMinimizeSubmenu = false;
 
     this.dataService.splitscreenSubject.next(false);
 
-    console.log("ISVARIABLESPEED: ", this.isVariableSpeed)
+    //console.log("ISVARIABLESPEED: ", this.isVariableSpeed)
 
     clearTimeout(timer);
 
@@ -240,15 +239,13 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.isSectionSelected = true;
     this.contentShouldBeVisible = true;
 
+    //pass subcategories for the submenu
     this.subcategories = this.dataService.getSectionCategories(name);
 
     //set the category intro video
     this.categoryVideo = await this.dataService.getSectionIntroVideo(name);
     //get the time
     let v_time:any = await this.dataService.getSectionVideoTime(this.categorySelected);
-
-    
- 
   
     //load the video
     if(!this.isMobile){
@@ -263,9 +260,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       catTimer = setTimeout(() => {
         this.shouldDisableBtn = false;
         this.shouldShowSubmenu = true;
-
-        //this.categoryVideoElement.pause();
-        //console.log("CATEGORY VIDEO PAUSED");
       }, v_time);
 
       //ui cleaning
@@ -275,8 +269,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       
 
     }
-
-   
 
     //do mobile stuff
     if(this.isMobile){
@@ -297,13 +289,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
             let setHeight: number =   (parseInt(count) * 20) * 2;
             //console.log(setHeight);
             submenu.style.height = setHeight + "px";
-          }
-         
+          }       
         }
-        
       }
-    
-   
     }
 
    
@@ -337,7 +325,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
     //Set the active
     this.selectedItem = index;
-    
 
     //get and set the data
     let categoryData:any = await this.dataService.getCategoryData(name);
@@ -385,7 +372,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     
     }else{
       
-      
       //console.log("loding subcategory video: ", this.subCategoryVideo);
       this.loadVideos("subcategory", this.subCategoryVideo)
       //show subcategory video
@@ -393,17 +379,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       //set it to have a video running - for the queue
       this.isSubVideoRunning = true;
       this.isVimeoLoading = false;
-      
-      //set the timer for the subcategory video
-      timer = setTimeout(async () => {
-        //this.idleVideoElement.pause();
-        //--- recent change
-        //this.subCategoryVideoElement.pause();
-        //this.isVideoPaused.next(true);
-        //console.log("SUBCATERGORY VIDEO PAUSED");
-      
-      }, Math.floor(this.videoDuration))
-  
+    
     }
    
     this.subCategorySelected = name;
@@ -411,7 +387,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
 
     //-- CHECK IF WE ARE ON MOBILE AND HIDE THE SUBMENU
- 
     if(!this.isDesktop){
       this.shouldShowSubmenu = false;
       this.breadcrumbsShouldBeVisible = true;
@@ -527,8 +502,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   //--- AFTERVIEWINIT
   async ngAfterViewInit(): Promise<any>{
-
-    
    
     //-- DEFINE THE PLAYERS 
     this.idleVideoElement = this.idleVideoNew?.nativeElement;
@@ -549,10 +522,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.subCategoryVideoElement.addEventListener("playing", () => {
         this.isVimeoLoading = false;
         if(!this.isFirstLoad){
-          
-         // console.log("CLEAR TIMER")
-          //clear timer
-         // clearTimeout(timer);
     
           //if there is a new select
           if(!this.isPausedBybSubcatSelect){
@@ -606,11 +575,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   ngOnInit(): void { 
   
-   
     //-- SET INNERWIDTH
     this.innerWidth = window.innerWidth;
-    
-
+  
     //-- CHECK WINDOW WIDTH
     this.checkWindowSize(this.innerWidth);
     
