@@ -334,7 +334,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.videoFrameStart = categoryData["video_frame_animation_start"];
 
 
-    if(name == "Variable Speed 2"){
+    if(name == "Pump Selection"){
       this.isVariableSpeed = true;     
       this.shouldMinimizeSubmenu = true;
       this.splitscreenService.splitData.next(this.data);

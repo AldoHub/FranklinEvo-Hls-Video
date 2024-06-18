@@ -98,43 +98,46 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
 
   //dummy data
   public activeNozzles = ['2', '4', '6', '8'];
-  public variableSpeedSelector = ['2', '4'];
-  public fixedSpeedSelector = ['2', '4'];
+  //public variableSpeedSelector = ['2', '4'];
+  public variableSpeedSelector = ['2(Hp MVS2)', '4(Hp MVS4)'];
+  public fixedSpeedSelector = ['2Hp Std PSI (M200)', '2Hp High PSI (HM200)'];
 
   public configSelector(value: string, index: string){
-    
     //shows the speed menu
     this.selectedItemTop = index;
     
     this.configurations.map((c, i) => {
       if(this.configurations[i].configNumber == parseInt(value)){
-        //console.log(this.configurations[i]);
+       
+        //setting global config
         this.currentConfiguration = this.configurations[i];
-        this.setSpeeds("2", this.currentConfiguration);
-
+        //select the speeds according the data passed, on the current config
+        this.selectSpeed(0, 'variable');
+        this.selectSpeed(0, 'fixed');
       }
       
     });
-
-    //selects the defaults for the bottom speeds menu
-    this.selectedItem = '2';
-    this.selectedItem2 = '2';
-   
   }
 
 
-
+/*
   public selectSpeeds(value: string, index: string){
-    
+
+  
+    console.log(value)
+
     //--- tie the selectors, both will act on click
     //depending on the current metric do the calcs needed
-    this.setSpeeds(value, this.currentConfiguration);
+    //this.setSpeeds(index, this.currentConfiguration);
 
     //select the correct option
     this.selectedItem = index;
     this.selectedItem2 = index;
+  
 
+   
   }
+*/
 
 
   public unitsChange(unit: string, index: string){
@@ -144,43 +147,50 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
     this.selectedGauge = `${this.imagesFolder}${unit}.png`;
     this.currentMetric = unit;
   
-    this.setSpeeds(index, this.currentConfiguration);
+    //this.setSpeeds(index, this.currentConfiguration);
 
   }
 
 
+  public selectSpeed(i:number, mode:string){
 
-  //TODO ---- unify all speed changes into one function, taking into account the unit mode
-  public setSpeeds(hp: string, config: any ){
-    
-    console.log(hp, config); 
-    if(this.currentMetric == 'gpm'){
-      if(hp == '2'){
+        if(mode == 'variable'){
+          this.selectVariableSpeed(i);
+        }else{
+          this.selectFixedSpeed(i)
+        }
+
+  }
+
+
+  
+  //Variable Speed Selector
+  public selectVariableSpeed(i: number){
+    // this.setSpeeds(i, this.currentConfiguration);
+    this.selectedItem = i;
+    if(this.currentMetric = 'gpm'){
+      if(i == 0){
         this.setVariableSpeed(this.currentConfiguration.vgpm_2);
-        this.setFixedSpeed(this.currentConfiguration.fgpm_2);
-
       }else{
-        //use 4hp data
         this.setVariableSpeed(this.currentConfiguration.vgpm_4);
+      }
+    }  
+  }
+ 
+ 
+  //Fixed Speed Selector
+  public selectFixedSpeed(i:number){
+    this.selectedItem2 = i;
+    if(this.currentMetric = 'gpm'){
+      if(i == 0){
+        this.setFixedSpeed(this.currentConfiguration.fgpm_2);
+      }else{
         this.setFixedSpeed(this.currentConfiguration.fgpm_4);
       }
-    }else{ 
-      if(hp == '2'){
-        this.setVariableSpeed(this.currentConfiguration.vpsi_2);
-        this.setFixedSpeed(this.currentConfiguration.fpsi_2);
-      
-      }else{
-        //use 4hp data
-        this.setVariableSpeed(this.currentConfiguration.vpsi_4);
-        this.setFixedSpeed(this.currentConfiguration.fpsi_4);
-
-      }
-    }
-   
+    } 
   }
-
-
-
+ 
+ 
   //**** --- each gauge marker is 13.5 degrees aprox */
 
   //--- calc gauge rotation
@@ -238,8 +248,9 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
           this.showCarsLayout = true;
           this.showWrapper = true;
           this.selectedUnit = 'gpm';
-          this.configSelector('2', '2'); 
-        
+          //this.configSelector('2', '2'); 
+          this.configSelector('2', '2');
+
           }
     });
 

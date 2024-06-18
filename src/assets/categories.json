@@ -32,8 +32,8 @@
       "time": "1"
     },
     {
-      "name": "Flow Rate Monitoring",
-      "subcategories": "[\"Flow Rate Monitoring\",\"Variable Speed\", \"Variable Speed 2\"]",
+      "name": "Flow Rates",
+      "subcategories": "[\"Flow Rate Monitoring\",\"Pump Selection\"]",
       "intro_video": "https://vods.immixpro.com/franklin/idle_animation_comp_0001-1200.mp4.m3u8",
       "time": "1"
     },
@@ -157,14 +157,7 @@
       "video_frame_animation_start": "1"
     },
     {
-      "name": "Variable Speed",
-      "description": "<div class='inner-data-container'><div><img src='./assets/images/c6.5.jpg' /></div></div>",
-      "video": "https://vods.immixpro.com/franklin/6.2.mp4.m3u8",
-      "video_duration": "34000",
-      "video_frame_animation_start": "8"
-    },
-    {
-      "name": "Variable Speed 2",
+      "name": "Pump Selection",
       "description": "<div class=''><div><img src='./assets/images/c7.jpg' /></div></div>",
       "video": "../assets/videos/Variable_Speed_Sequence_v3.mp4.m3u8",
       "video_duration": "4500",

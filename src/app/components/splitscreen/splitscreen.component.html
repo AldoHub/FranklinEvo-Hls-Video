@@ -48,7 +48,10 @@
                 <h4>Variable Speed</h4>
             </div>
             <div>
-                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} <span *ngIf="isDesktop">Horsepower</span> <span *ngIf="!isDesktop">Hp</span></p>
+                <!--
+                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} <span *ngIf="isDesktop">(Hp MVS{{i}})</span> <span *ngIf="!isDesktop">(Hp MVS{{i}})</span></p>
+                -->
+                <p [ngClass]="{'active': selectedItem === i}" *ngFor="let sp of variableSpeedSelector; let i = index;" (click)="selectSpeed(i, 'variable')">{{sp}}</p>
             </div>
         </div>
 
@@ -73,7 +76,10 @@
                 <h4>Fixed Speed</h4>
             </div>
             <div>
-                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} <span *ngIf="isDesktop">Horsepower</span> <span *ngIf="!isDesktop">Hp</span> </p>
+                <!--
+                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i" (click)="selectSpeeds(sp, i)">{{sp}} <span *ngIf="isDesktop"></span> <span *ngIf="!isDesktop">(Hp MVS{{i}})</span> </p>
+                -->
+                <p [ngClass]="{'active': selectedItem2 === i}" *ngFor="let sp of fixedSpeedSelector; let i = index;" (click)="selectSpeed(i, 'fixed')">{{sp}}</p>
             </div>
         </div>
     </div>
