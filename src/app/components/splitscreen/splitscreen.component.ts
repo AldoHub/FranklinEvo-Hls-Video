@@ -58,9 +58,9 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
     {
       configNumber: 4,
       carsLayout: `${this.imagesFolder}4.jpg`,
-      vgpm_2: 10,
+      vgpm_2: 10, 
       vgpm_4: 10,
-      fgpm_2: 10,
+      fgpm_2: 11, //10 OG
       fgpm_4: 12,
       vpsi_2: 31,
       vpsi_4: 31,
@@ -74,7 +74,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
       vgpm_4: 10,
       fgpm_2: 9,
       fgpm_4: 10,
-      vpsi_2: 30,
+      vpsi_2: 32, //30 OG
       vpsi_4: 32,
       fpsi_2: 30,
       fpsi_4: 33
@@ -87,7 +87,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
       fgpm_2: 8,
       fgpm_4: 9,
       vpsi_2: 31,
-      vpsi_4: 36,
+      vpsi_4: 34, //36 OG
       fpsi_2: 26,
       fpsi_4: 29
     }
@@ -96,9 +96,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
   public units: string[] = ["gpm", "psi"];
   public currentConfiguration:any = this.configurations[1];
 
-  //dummy data
   public activeNozzles = ['2', '4', '6', '8'];
-  //public variableSpeedSelector = ['2', '4'];
   public variableSpeedSelector = ['2(Hp MVS2)', '4(Hp MVS4)'];
   public fixedSpeedSelector = ['2Hp Std PSI (M200)', '2Hp High PSI (HM200)'];
 
@@ -108,47 +106,28 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
     
     this.configurations.map((c, i) => {
       if(this.configurations[i].configNumber == parseInt(value)){
-       
         //setting global config
         this.currentConfiguration = this.configurations[i];
         //select the speeds according the data passed, on the current config
         this.selectSpeed(0, 'variable');
         this.selectSpeed(0, 'fixed');
       }
-      
     });
   }
 
 
-/*
-  public selectSpeeds(value: string, index: string){
-
-  
-    console.log(value)
-
-    //--- tie the selectors, both will act on click
-    //depending on the current metric do the calcs needed
-    //this.setSpeeds(index, this.currentConfiguration);
-
-    //select the correct option
-    this.selectedItem = index;
-    this.selectedItem2 = index;
-  
-
-   
-  }
-*/
-
-
   public unitsChange(unit: string, index: string){
   
+    console.log("UNITS CHANGE")
+
     this.selectedUnit = index;
 
     this.selectedGauge = `${this.imagesFolder}${unit}.png`;
     this.currentMetric = unit;
   
     //this.setSpeeds(index, this.currentConfiguration);
-
+    this.selectSpeed(0, 'variable');
+    this.selectSpeed(0, 'fixed');
   }
 
 
@@ -166,14 +145,19 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
   
   //Variable Speed Selector
   public selectVariableSpeed(i: number){
-    // this.setSpeeds(i, this.currentConfiguration);
     this.selectedItem = i;
-    if(this.currentMetric = 'gpm'){
+    if(this.currentMetric == 'gpm'){
       if(i == 0){
         this.setVariableSpeed(this.currentConfiguration.vgpm_2);
       }else{
         this.setVariableSpeed(this.currentConfiguration.vgpm_4);
       }
+    }else{
+        if(i == 0){
+          this.setVariableSpeed(this.currentConfiguration.vpsi_2);
+        }else{
+          this.setVariableSpeed(this.currentConfiguration.vpsi_4);
+        }  
     }  
   }
  
@@ -181,12 +165,18 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
   //Fixed Speed Selector
   public selectFixedSpeed(i:number){
     this.selectedItem2 = i;
-    if(this.currentMetric = 'gpm'){
+    if(this.currentMetric == 'gpm'){
       if(i == 0){
         this.setFixedSpeed(this.currentConfiguration.fgpm_2);
       }else{
         this.setFixedSpeed(this.currentConfiguration.fgpm_4);
       }
+    }else{
+      if(i == 0){
+        this.setFixedSpeed(this.currentConfiguration.fpsi_2);
+      }else{
+        this.setFixedSpeed(this.currentConfiguration.fpsi_4);
+      }  
     } 
   }
  
@@ -248,7 +238,6 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
           this.showCarsLayout = true;
           this.showWrapper = true;
           this.selectedUnit = 'gpm';
-          //this.configSelector('2', '2'); 
           this.configSelector('2', '2');
 
           }

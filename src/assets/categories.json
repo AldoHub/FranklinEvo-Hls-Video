@@ -159,9 +159,9 @@
     {
       "name": "Pump Selection",
       "description": "<div class=''><div><img src='./assets/images/c7.jpg' /></div></div>",
-      "video": "../assets/videos/Variable_Speed_Sequence_v3.mp4.m3u8",
-      "video_duration": "4500",
-      "video_frame_animation_start": "4"
+      "video": "https://vods.immixpro.com/franklin/Variable_Speed_Sequence_v3.mp4.m3u8",
+      "video_duration": "5500",
+      "video_frame_animation_start": "5"
     },
     {
       "name": "Sentinel Mode",

@@ -135,12 +135,9 @@
 }
 
 
-
-
 .variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4, .variable-left-mini-menu > div:last-of-type, .variable-right-mini-menu > div:last-of-type{
     font-size: 25px;
 }
-
 
 
 .gauge {
@@ -166,6 +163,7 @@
     transform: rotate(45deg);
 }
 
+
 .variable-bottom-bar {
     display: flex;
     align-items: center;
@@ -175,11 +173,13 @@
     justify-content: space-evenly;
 }
 
+
 .cars-layout-image {
     width: 100%;
     position: absolute;
     top: 0px;
     z-index: 0;
+    /*opacity: 0.3;*/ 
     height: auto;
     max-height: 100%;
 }
@@ -231,15 +231,17 @@
   
     .variable-left-mini-menu, .variable-right-mini-menu{
         width: 250px;
-        font-size: 20px;
+        /*font-size: 20px;*/
+    }
+
+    .variable-left-mini-menu p, .variable-right-mini-menu p{
+        font-size: 17px;
     }
 
 }
 
 @media screen and (max-width:990px){
-
-   
-    
+ 
     .variable-bottom-bar {
         background: #1f1f1f;
     }
@@ -261,8 +263,8 @@
 
     
     .variable-mini-bar h4, .variable-left-mini-menu h4, .variable-right-mini-menu h4, .variable-middle-menu h4{
-        padding: 14px;
         max-width: 90px;
+        font-size: 17px;
     }
 
 
@@ -300,6 +302,16 @@
 
     .variable-left-mini-menu {
         margin-right: 250px;
+    }
+
+    .variable-left-mini-menu p, .variable-right-mini-menu p {
+        width: 65px;
+        height: 50px;
+        font-size: 13px;
+    }
+
+    .variable-left-mini-menu , .variable-right-mini-menu {
+        align-items: center;
     }
 }
 
