@@ -22,8 +22,8 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
 
   public showCarsLayout:boolean = false; 
   public imagesFolder: string = "../../../assets/images/";
-  public selectedItem:any = "";
-  public selectedItem2:any = "";
+  public selectedItem: number | null = null;
+  public selectedItem2: number | null = null;
   public selectedItemTop:any = "";
   public selectedGauge!:string;
   public selectedUnit!: string;
@@ -48,7 +48,7 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
       carsLayout: `${this.imagesFolder}2.jpg`,
       vgpm_2: 10,
       vgpm_4: 10,
-      fgpm_2: 11,
+      fgpm_2: 12, // OG 11
       fgpm_4: 14,
       vpsi_2: 30,
       vpsi_4: 30,
@@ -108,10 +108,10 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
       if(this.configurations[i].configNumber == parseInt(value)){
         //setting global config
         this.currentConfiguration = this.configurations[i];
-        //select the speeds according the data passed, on the current config
-        this.selectSpeed(0, 'variable');
-        this.selectSpeed(0, 'fixed');
-      }
+       
+        this.checkItemsSelection();
+       
+        }
     });
   }
 
@@ -125,10 +125,26 @@ export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContent
     this.selectedGauge = `${this.imagesFolder}${unit}.png`;
     this.currentMetric = unit;
   
-    //this.setSpeeds(index, this.currentConfiguration);
-    this.selectSpeed(0, 'variable');
-    this.selectSpeed(0, 'fixed');
+    this.checkItemsSelection();
   }
+
+
+  public checkItemsSelection(){
+    //variable
+    if(this.selectedItem != null) {
+      this.selectSpeed(this.selectedItem, 'variable');
+    }else{
+      this.selectSpeed(0, 'variable');
+    }
+
+    //fixed
+    if(this.selectedItem2 != null) {
+      this.selectSpeed(this.selectedItem2, 'fixed');
+    }else{
+      this.selectSpeed(0, 'fixed');
+    }
+  }
+
 
 
   public selectSpeed(i:number, mode:string){
