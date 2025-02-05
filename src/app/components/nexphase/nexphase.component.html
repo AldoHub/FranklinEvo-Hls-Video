@@ -1,0 +1,29 @@
+<div class="nexphase-section">
+    <div class="nexphase-content-wrapper">
+        <div class="three-wrapper">
+            <!-- threejs model -->
+          <app-three class="full-width"></app-three>
+        </div>
+
+        <div class="right-pane">
+            <!-- switches npm https://www.npmjs.com/package/ngx-toggle-switch -->
+            <p (click)="toggleDeadfront()">Deadfronts</p>
+            <p (click)="toggleDoor()">Doors</p>
+            <div (click)="selectPart($event, idx)" class="pane-item" *ngFor="let part of parts; trackBy: trackByTitle; let idx = index">
+                <p>{{idx + 1}}. {{part.title}}</p>
+            </div>
+           
+        </div>
+
+        <div class="info-pane">
+            <div>X</div>
+            <h2>Main Breaker</h2>
+            <img src="#" />
+            <div class="info-pane-description">
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Animi cum, inventore quas vero corrupti odio quibusdam ut quisquam aperiam officiis ea, soluta incidunt pariatur dicta ratione unde, rem explicabo deleniti.
+            </div>
+        </div>
+
+
+    </div>
+</div>

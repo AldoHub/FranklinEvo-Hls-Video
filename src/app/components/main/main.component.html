@@ -4,13 +4,6 @@
     <!-- spinner component -->
     <app-spinner *ngIf="isVimeoLoading"></app-spinner>
 
-    
-
-
-
-
-
-
 
     <!-- START --- videos -->
     <div class="category-video-wrapper">
@@ -108,14 +101,13 @@
                 </div>
                 </div>
 
-                
                 <!-- START --- splitscreen -->   
-                <app-splitscreen style="left: 0;
-                position: absolute;
-                display: block;
-                width: 100%;
-                height: 100%;" *ngIf="isVariableSpeed"></app-splitscreen>
+                <app-splitscreen class="full-width" *ngIf="isVariableSpeed"></app-splitscreen>
                 <!-- END --- splitscreen -->   
+            
+                <!-- START --- Nexphase  -->   
+                <app-nexphase class="full-width" *ngIf="isNexphase"></app-nexphase>
+                <!-- END --- Nexphase --> 
             </div>
             <!-- END --- subcategories menu -->
 

@@ -13,6 +13,8 @@ import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 
 //splitscreen component
 import { SplitscreenComponent } from "../splitscreen/splitscreen.component";
+//nexphase component
+import { NexphaseComponent } from '../nexphase/nexphase.component';
 
 @NgModule({
   imports: [
@@ -23,8 +25,9 @@ import { SplitscreenComponent } from "../splitscreen/splitscreen.component";
     VgCoreModule,
     VgControlsModule,
     VgOverlayPlayModule,
-    VgBufferingModule
+    VgBufferingModule,
+    NexphaseComponent, // standalone component,
   ],
-  declarations: [MainComponent, SplitscreenComponent ,SpinnerComponent]
+  declarations: [MainComponent, SplitscreenComponent ,SpinnerComponent],
 })
 export class MainModule { }

@@ -11,6 +11,7 @@
 npm-debug.log
 yarn-error.log
 
+
 # IDEs and editors
 .idea/
 .project
@@ -37,7 +38,7 @@ yarn-error.log
 testem.log
 /typings
 /src/assets/videos
-
+/src/assets/model
 
 # System files
 .DS_Store

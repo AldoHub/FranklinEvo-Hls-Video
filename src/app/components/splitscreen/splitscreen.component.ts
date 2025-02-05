@@ -6,7 +6,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-splitscreen',
   templateUrl: './splitscreen.component.html',
-  styleUrls: ['./splitscreen.component.css']
+  styleUrls: ['./splitscreen.component.css'],
+  standalone: false,
 })
 export class SplitscreenComponent implements OnInit, AfterViewInit, AfterContentInit ,OnDestroy {
 

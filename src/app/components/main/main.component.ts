@@ -11,12 +11,12 @@ let inactiveTimer: any
 
 @Component({
   selector: 'app-main',
+  standalone: false,
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css'],
 })
 
 export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
-
 
   constructor(
     private dataService: DataService,
@@ -119,6 +119,9 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   //variable speed
   public isVariableSpeed: boolean = false;
   public shouldMinimizeSubmenu:boolean = false;
+
+  //nexphase
+  public isNexphase: boolean = false;
 
   public checkWindowSize(innerwidth: number){
     if(innerwidth <= 579){
@@ -333,7 +336,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.videoDuration = categoryData["video_duration"];
     this.videoFrameStart = categoryData["video_frame_animation_start"];
 
-
+/*
     if(name == "Pump Selection"){
       this.isVariableSpeed = true;     
       this.shouldMinimizeSubmenu = true;
@@ -345,9 +348,21 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.dataService.splitscreenSubject.next(false);
     }
 
-    console.log("ISVARIABLESPEED: ", this.isVariableSpeed)
+*/
+    if(name == "Pump Selection"){
+      this.toggleSplitscreen(true);
+    }else if(name == 'Nexphase'){
+      this.toggleNexphase(true);
+      this.isVimeoLoading = false;
+    }else{
+      this.disableSpecialSections();
+      this.subcategoryVideosHandler(categoryData);
+    }
+
+    //console.log("ISVARIABLESPEED: ", this.isVariableSpeed)
 
     //if theres a video already running?
+    /*
     if(this.isSubVideoRunning){  
 
       console.log("THERES A SUBCATEGORY VIDEO RUNNING")
@@ -381,10 +396,10 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.isVimeoLoading = false;
     
     }
-   
+   */
+
     this.subCategorySelected = name;
     this.breadcrumbSubCat = name;
-
 
     //-- CHECK IF WE ARE ON MOBILE AND HIDE THE SUBMENU
     if(!this.isDesktop){
@@ -392,8 +407,41 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.breadcrumbsShouldBeVisible = true;
     }
 
-   
+  }
 
+
+  public async subcategoryVideosHandler(categoryData:any){
+    //if theres a video already running?
+    if(this.isSubVideoRunning){  
+
+      console.log("THERES A SUBCATEGORY VIDEO RUNNING")
+      this.isVimeoLoading = false;
+      //trigger for pause checking
+      this.isPausedBybSubcatSelect = true;  
+      
+      //set a video on the queue
+      this.isVideoOnQueue = categoryData["video"];
+
+      //get previous video data
+      let oldData:any = await this.dataService.getCategoryData(this.subCategorySelected);
+      
+      //get the current time of the vimeo player
+      let currTime = this.subCategoryVideoElement.currentTime;
+      if(currTime && (currTime < (Math.floor((oldData["video_duration"]/ 1000))))){
+        this.subCategoryVideoElement.currentTime = Math.floor((oldData["video_duration"]/ 1000));  
+      }
+      //play the video again
+      this.subCategoryVideoElement.play();
+    
+    }else{
+      //console.log("loding subcategory video: ", this.subCategoryVideo);
+      this.loadVideos("subcategory", this.subCategoryVideo)
+      //show subcategory video
+      this.showSubCategoryVideoPlayer = true;     
+      //set it to have a video running - for the queue
+      this.isSubVideoRunning = true;
+      this.isVimeoLoading = false;   
+    }
   }
 
 
@@ -458,9 +506,6 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
           this.idleVideoElement.play();
         });
       }
-
-
-     
     }
 
     //loads the category video
@@ -499,6 +544,27 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     this.shouldMinimizeSubmenu = !this.shouldMinimizeSubmenu;
   }
 
+  public toggleSplitscreen(isSelected: boolean){
+    this.isVariableSpeed = isSelected;     
+    this.shouldMinimizeSubmenu = isSelected;
+    this.splitscreenService.splitData.next(this.data);
+  }
+
+  public toggleNexphase(isSelected: boolean){
+    alert("NEXPHASE SELECTED");
+    this.isNexphase = isSelected;
+    //NOTE --- might need to disable/ hide videos***
+
+    //TODO --- add observable for this prop
+  }
+
+  public disableSpecialSections(): void{
+    this.isVariableSpeed = false;
+    this.isNexphase = false;
+    this.shouldMinimizeSubmenu = false;
+    //this.splitscreenService.splitData.next('');
+    this.dataService.splitscreenSubject.next(false);
+  }
 
   //--- AFTERVIEWINIT
   async ngAfterViewInit(): Promise<any>{

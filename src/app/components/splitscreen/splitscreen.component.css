@@ -46,7 +46,7 @@
 
 .instruction-steps h4 {
     font-size: 2em;
-    color: #8cc63d;
+    color: #0082ca;
 }
 
 .instructions-step-title {
@@ -185,7 +185,7 @@
 
 
 .active, .active-top, .variable-left-mini-menu > div:last-of-type > p:hover, .variable-right-mini-menu > div:last-of-type > p:hover, .middle-buttons > p:hover, .variable-mini-bar > div > span:hover {
-    background-color: #8cc63d;
+    background-color: #0082ca;
     color: #1f1f1f;
 }
 
