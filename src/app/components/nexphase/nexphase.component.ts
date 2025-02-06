@@ -1,20 +1,21 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ThreeComponent } from './three/three.component';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 
 //services
 import { NexphaseService } from 'src/app/services/nexphase.service';
-
-
+import { InputSwitchModule, InputSwitchOnChangeEvent } from 'primeng/inputswitch';
 
 @Component({
   selector: 'app-nexphase',
   standalone: true,
   templateUrl: './nexphase.component.html',
   styleUrls: ['./nexphase.component.css'],
-  imports: [ThreeComponent, CommonModule]
+  imports: [ThreeComponent, CommonModule, InputSwitchModule, ReactiveFormsModule]
 })
-export class NexphaseComponent {
+export class NexphaseComponent implements OnInit{
+ 
   public nexphaseService = inject(NexphaseService);
   //TODO --- MOVE TO SERVICE
   //info panel data
@@ -89,24 +90,45 @@ export class NexphaseComponent {
 
   private isDoorOpen:boolean = false;
   private isDeadfrontOn:boolean = false;
+  public isPaneOpen: boolean = false;
+  
+  
+  public togglersForm = new FormGroup({
+    deadfronts: new FormControl<boolean | null>(true, {validators:[], nonNullable: true}),
+    doors: new FormControl<boolean | null>(true, {validators:[], nonNullable: true}),  
+  });
 
-  public toggleDoor(){
-    this.isDoorOpen = !this.isDoorOpen;
+
+  public toggleDoor(ev: InputSwitchOnChangeEvent){
+    this.isDoorOpen = ev.checked;
     this.nexphaseService.toggleDoor(this.isDoorOpen);
   }
 
-  public toggleDeadfront(){
-    this.isDeadfrontOn = !this.isDeadfrontOn;
+  public toggleDeadfront(ev: InputSwitchOnChangeEvent){
+    this.isDeadfrontOn = ev.checked;
     this.nexphaseService.toggleDeadfront(this.isDeadfrontOn);
   }
 
   public selectPart($ev: Event, idx: number){
-    /*console.log($ev.target, idx);
-    alert("PART SELECTED")*/
-    //this.nexphaseService.testFunction();
+    console.log($ev.target, idx);
+    this.nexphaseService.showInfo();
   }
+
+  public closeInfoPane(){
+    this.isPaneOpen = false;
+    this.nexphaseService.isPaneOpen.next(false);
+  }
+
 
   trackByTitle(index: number, item: any): number {
     return item.title;
+  }
+
+  ngOnInit(): void {
+    
+    this.nexphaseService.isPaneOpen.subscribe((value) => {
+      this.isPaneOpen = value;
+    });
+
   }
 }

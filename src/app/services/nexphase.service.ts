@@ -9,8 +9,9 @@ export class NexphaseService {
 
   constructor() { }
 
-  public isDoorOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  public isDeadfrontOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public isDoorOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public isDeadfrontOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public isPaneOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   
 
   public toggleDoor(value: boolean){
@@ -19,6 +20,13 @@ export class NexphaseService {
 
   public toggleDeadfront(value: boolean){
     this.isDeadfrontOn.next(value);
+  }
+
+  public showInfo(){
+    //get data
+    console.log("fetching data");
+    //open info panel
+    this.isPaneOpen.next(true);
   }
 
 }

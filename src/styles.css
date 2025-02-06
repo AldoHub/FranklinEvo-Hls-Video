@@ -7,6 +7,9 @@ body, html {
     font-family: "trade-gothic-next";
     background: #111;
 }
+.full-width {
+    overflow: hidden;
+}
 
 
 .inner-data-container{

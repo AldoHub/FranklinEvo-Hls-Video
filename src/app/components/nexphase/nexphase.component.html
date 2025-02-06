@@ -6,17 +6,20 @@
         </div>
 
         <div class="right-pane">
-            <!-- switches npm https://www.npmjs.com/package/ngx-toggle-switch -->
-            <p (click)="toggleDeadfront()">Deadfronts</p>
-            <p (click)="toggleDoor()">Doors</p>
+            <form [formGroup]="togglersForm">
+                <div class="togglers-wrappers">
+                    <div>Deadfronts <div class="inner-toggler-wrapper"><span>ON</span><p-inputSwitch (onChange)="toggleDeadfront($event)" formControlName="deadfronts"/><span>OFF</span></div></div>
+                    <div>Doors <div class="inner-toggler-wrapper"><span>OPEN</span><p-inputSwitch (onChange)="toggleDoor($event)" formControlName="doors" /><span>CLOSE</span></div></div>
+                </div>
+            </form>
             <div (click)="selectPart($event, idx)" class="pane-item" *ngFor="let part of parts; trackBy: trackByTitle; let idx = index">
                 <p>{{idx + 1}}. {{part.title}}</p>
             </div>
            
         </div>
 
-        <div class="info-pane">
-            <div>X</div>
+        <div class="info-pane" [ngClass]="{'show-more-info' : isPaneOpen}">
+            <div class='close-info-pane' (click)="closeInfoPane()"><img src="../../../assets/images/close.png" /></div>
             <h2>Main Breaker</h2>
             <img src="#" />
             <div class="info-pane-description">

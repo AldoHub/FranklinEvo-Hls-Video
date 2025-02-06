@@ -275,13 +275,14 @@ export class ThreeComponent implements OnInit, AfterViewInit {
  
     //TODO --- HANDLE DESTROY OF SUBSCRIPTIONS
     this.nexphaseService.isDoorOpen.subscribe((value) => {
-      this.front_panel.visible = !value;
-      this.back_panel.visible = !value;
+      this.front_panel.visible = value;
+      this.back_panel.visible = value;
     });
 
     this.nexphaseService.isDeadfrontOn.subscribe((value) => {
-      this.deadfront.visible = !value;
-    })
+      this.deadfront.visible = value;
+    });
+    
   }
 
 }

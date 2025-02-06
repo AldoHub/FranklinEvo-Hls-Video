@@ -1,6 +1,7 @@
 .nexphase-section, .nexphase-content-wrapper,  .three-wrapper {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 .right-pane, .info-pane {
@@ -12,13 +13,21 @@
     max-width: 322px;
     height: auto;
     z-index: 3;
-    /*top: 206px;*/
-    top: 132px;
+    top: 101px;
     right: 80px;
 }
 
+.close-info-pane {
+    position: absolute;
+    right: 0px;
+    padding: 10px;
+    background: #0082ca;
+    z-index: 10;
+    cursor: pointer;
+}
+
+
 .info-pane {
-    display: none;
     background: #fff;
     max-width: 526px;
     right: 0;
@@ -26,6 +35,14 @@
     z-index: 4;
     height: 100%;
     padding-left: 74px;
+    opacity: 0;
+    transition: all 400ms ease-in-out;
+    transform: translateX(700px); 
+}
+
+.info-pane.show-more-info {
+    opacity: 1;
+    transform: translateX(0px); 
 }
 
 .pane-item {
@@ -39,4 +56,53 @@
 .pane-item p {
     margin: 0;
     font-size: 0.8em;
+}
+
+.togglers-wrappers div {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.togglers-wrappers > div {
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    padding: 0.6em 0em;
+}
+
+.togglers-wrappers > div:last-of-type {
+    border-top: none;
+    margin-bottom: 1.5em;
+}
+
+.togglers-wrappers div .inner-toggler-wrapper {
+    font-weight: 400;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    gap: 6px;
+}
+
+.togglers-wrappers div .inner-toggler-wrapper span {
+    width: 42px;
+    display: flex;
+    
+}
+
+.togglers-wrappers div .inner-toggler-wrapper span:first-of-type {
+    justify-content: flex-end;
+}
+
+@keyframes slideIn {
+    0% {
+      opacity: 0;
+      transform: translateX(700px); 
+    }
+    100% {
+        opacity: 1;
+      transform: translateX(0); 
+    }
 }
