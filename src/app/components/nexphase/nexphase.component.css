@@ -53,6 +53,11 @@
     cursor: pointer;
 }
 
+.pane-item.active {
+    color: #0082ca;
+    background: #fff;
+}
+
 .pane-item p {
     margin: 0;
     font-size: 0.8em;

@@ -7,6 +7,9 @@ import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
 import { NexphaseService } from 'src/app/services/nexphase.service';
 import { InputSwitchModule, InputSwitchOnChangeEvent } from 'primeng/inputswitch';
 
+//interfaces
+import { Part } from 'src/app/interfaces/part';
+
 @Component({
   selector: 'app-nexphase',
   standalone: true,
@@ -17,77 +20,8 @@ import { InputSwitchModule, InputSwitchOnChangeEvent } from 'primeng/inputswitch
 export class NexphaseComponent implements OnInit{
  
   public nexphaseService = inject(NexphaseService);
-  //TODO --- MOVE TO SERVICE
-  //info panel data
-  public parts = [
-    {
-      "title": "Monitoring & Control Panel",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Maintenance Mode Switch",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "GFCI Outlet",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Main Breaker",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Branch Breakers",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Monitoring & Control Breaker",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Charger & Sensor Connection Panel",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Lockable Door",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Cellular Antenna",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Meter Socket",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Meter Test Switch Plate",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Current Transformer Mounting Plates",
-      "image": "",
-      "content": "some data" 
-    },
-    {
-      "title": "Underground Untility Service Connections",
-      "image": "",
-      "content": "some data" 
-    },
-
-  ];
-
+ 
+  public parts!: Part[];
   private isDoorOpen:boolean = false;
   private isDeadfrontOn:boolean = false;
   public isPaneOpen: boolean = false;
@@ -119,16 +53,23 @@ export class NexphaseComponent implements OnInit{
     this.nexphaseService.isPaneOpen.next(false);
   }
 
+  public loadPaneData(){
+    this.parts = this.nexphaseService.getPaneData();
+  }
 
   trackByTitle(index: number, item: any): number {
     return item.title;
   }
 
   ngOnInit(): void {
-    
+
+    //get the parts from the service
+    this.loadPaneData();
+
     this.nexphaseService.isPaneOpen.subscribe((value) => {
       this.isPaneOpen = value;
     });
+
 
   }
 }

@@ -12,6 +12,26 @@ body, html {
 }
 
 
+.hotspot {
+    border: 1px solid #005daa;
+    padding: 10px;
+}
+
+.hotspot > div{
+    width: 16px;
+    height: 16px;
+    background: #005daa ;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.hotspot, .hotspot > div {
+    border-radius: 50%;
+}
+
 .inner-data-container{
     display: flex;
     justify-content: space-between;

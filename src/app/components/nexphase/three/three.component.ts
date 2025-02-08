@@ -1,10 +1,13 @@
-import { Component, AfterViewInit, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, Input, OnInit, ViewChild, inject, HostListener } from '@angular/core';
 import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+
+//service
 import { NexphaseService } from 'src/app/services/nexphase.service';
+import { ObjPart } from 'src/app/interfaces/objpart';
 
 
 @Component({
@@ -14,11 +17,18 @@ import { NexphaseService } from 'src/app/services/nexphase.service';
   styleUrls: ['./three.component.css']
 })
 export class ThreeComponent implements OnInit, AfterViewInit {
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.onWindowResize();
+  }
+
   public nexphaseService = inject(NexphaseService);
 
   //canvas ref
   @ViewChild('canvas', {static: true}) canvasRef!: ElementRef<HTMLCanvasElement>;
   private renderer!: THREE.WebGLRenderer;
+  private css2drenderer: CSS2DRenderer = new CSS2DRenderer();
   private camera!: THREE.PerspectiveCamera;
   private scene!: THREE.Scene;
   private loaderOBJ: OBJLoader = new OBJLoader();
@@ -49,48 +59,15 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private THREEBox: THREE.Group = new THREE.Group();
   private isGroup: boolean = true; //tells the way of rendering the objs on the scene - as a whole group or individual pieces
 
-  //TODO -- MOVE TO SERVICE
-  //objects part assets mapping
-  private objParts = [
-    {
-      "partName": "main_body",
-      "texture": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/main_body.mtl",
-      "object": "/assets/model/obj/main_body.obj"
-    },
-    {
-      "partName": "back_panel",
-      "texture": "",
-      "material": "/assets/model/materials/back_panel.mtl",
-      "object": "/assets/model/obj/back_panel.obj"
-    },
-    {
-      "partName": "front_equipment",
-      "texture": "",
-      "material": "/assets/model/materials/front_equipment.mtl",
-      "object": "/assets/model/obj/front_equipment.obj"
-    },
-    {
-      "partName": "deadfront",
-      "texture": "",
-      "material": "/assets/model/materials/deadfront.mtl",
-      "object": "/assets/model/obj/deadfront.obj"
-    },
-    {
-      "partName": "front_panel",
-      "texture": "/assets/model/textures/shell_front_door.png",
-      "material": "/assets/model/materials/front_panel.mtl",
-      "object": "/assets/model/obj/front_panel.obj"
-    }
-  ];
-
+  private objParts!: ObjPart[];
 
   private async createScene(): Promise<void>{
     console.log("Creating Scene...");
+    
     //Create the scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xe9eaea);
-    //this.scene.background = new THREE.Color(0x222222); 
+    
     //camera settings
     let aspectRatio = this.getAspectRatio();
     this.camera = new THREE.PerspectiveCamera(
@@ -105,7 +82,6 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.camera.position.z = 4;
     
     //ambient light
-    
     this.ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     this.ambientLight.castShadow = true;
     this.scene.add(this.ambientLight);
@@ -148,29 +124,76 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     return this.canvas.clientWidth / this.canvas.clientHeight;
   }
 
+
+  public createCSS2Objects(){
+    //TODO --- use the parts in order to create the objects
+    //create the element wrapper
+    let outerDiv = document.createElement('div');
+    outerDiv.className = 'hotspot'
+    outerDiv.setAttribute('data-index', "0")
+    //create the element label
+    let elemDiv = document.createElement('div');
+    elemDiv.textContent = '1';
+    
+    outerDiv.appendChild(elemDiv);
+
+    //create the CSS2D object using the element created before
+    let hotspotLabel = new CSS2DObject(outerDiv);
+    hotspotLabel.position.set( 0, 2, 1 );
+    hotspotLabel.center.set( 1, 1 );
+    console.log(hotspotLabel)
+    this.THREEBox.add(hotspotLabel);
+    hotspotLabel.layers.set( 0 );
+    
+    elemDiv.addEventListener("pointerdown", (e: any) => {
+      e.stopPropagation();
+      //TODO --- should select the settings item and open the info bar 
+      let target = e.target.parentNode;
+      let idx = target.getAttribute('data-index');
+      //use the index to get the correct part
+      let items = document.querySelectorAll(".pane-item");
+      items[idx].classList.add('active');
+      
+      //TODO --- should open the info panel with the correct data
+      setTimeout(() => {
+        this.nexphaseService.isPaneOpen.next(true);
+      }, 400);
+      
+    })
+ 
+  }
+
   private startRenderingLoop(){
     this.renderer = new THREE.WebGLRenderer({canvas: this.canvas, antialias: true});
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
     let component: ThreeComponent = this;
+
+    //render
     (function render(): void{
       component.renderer.render(component.scene, component.camera);
+      component.css2drenderer.render(component.scene, component.camera)
       requestAnimationFrame(render);
       //animations
     }());
+   
   }
+
+  private createCSS2DRenderer = () => {
+    console.log("Creating CSS2DRender...");
+    this.css2drenderer.setSize(window.innerWidth, window.innerHeight);
+    this.css2drenderer.domElement.style.position = 'absolute';
+    this.css2drenderer.domElement.style.top = '0px';
+    //get the correct wrapper for the rendered canvas
+    let nexphaseWrapper2 = document.querySelector('.three-wrapper .full-width');
+    //append the CSS2DRenderer
+    nexphaseWrapper2?.appendChild(this.css2drenderer.domElement);
+  };
 
   private createControls = () => {
     console.log("Loading controls...");
-    const renderer = new CSS2DRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.domElement.style.position = 'absolute';
-    renderer.domElement.style.top = '0px';
-    //get the correct wrapper for the rendered canvas
-    let nexphaseWrapper = document.querySelector('.three-wrapper');
-    nexphaseWrapper?.appendChild(renderer.domElement);
     //set controls and settings
-    this.controls = new OrbitControls(this.camera, renderer.domElement);
+    this.controls = new OrbitControls(this.camera, this.css2drenderer.domElement);
     this.controls.autoRotate = false;
     this.controls.enableZoom = true;
     this.controls.enablePan = false;
@@ -207,7 +230,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
       //setting model obj
       this.loaderOBJ.load(OBJPath, (obj: THREE.Object3D ) => {
         this.model = obj;
-        //this.model.visible = false;
+     
         if(this.isGroup){
           //add to group
           this.THREEBox.add(this.model);
@@ -220,7 +243,9 @@ export class ThreeComponent implements OnInit, AfterViewInit {
             o.material.normalMap = this.normalTexture;
           }
         });
-      
+
+        this.THREEBox.layers.enableAll();
+
         //assign to the global vars  
         if(partName == 'main_body') {
           this.main_body = obj;
@@ -241,7 +266,9 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         //check if its a group and render it as a whole at the end of the proccessing
         if(this.isGroup){
           if(this.objParts.length == (idx + 1)){
+            //this.addGroupToScene();
             this.addGroupToScene();
+            this.THREEBox.layers.enableAll();
           }
         }else{
           //add the objects to the scene individually
@@ -265,14 +292,39 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.scene.add(this.THREEBox);
   }
 
+  private getObjectParts(){
+    this.objParts = this.nexphaseService.getObjParts();
+  }
+
+  private findHotspots(){
+    let hotspot = document.querySelector(".hotspot");
+    console.log(hotspot)
+    hotspot?.addEventListener("click", () => {
+      alert("CLICKED!!");
+    })
+  }
+
+  private onWindowResize() {
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize( window.innerWidth, window.innerHeight );
+    this.css2drenderer.setSize( window.innerWidth, window.innerHeight );
+
+  }
+
   ngAfterViewInit(): void {
     this.createScene();
+    this.createCSS2Objects();
     this.startRenderingLoop();
+    this.createCSS2DRenderer();
     this.createControls();
   }
 
   ngOnInit(): void {
  
+    //get the object parts to render on scene
+    this.getObjectParts();
+
     //TODO --- HANDLE DESTROY OF SUBSCRIPTIONS
     this.nexphaseService.isDoorOpen.subscribe((value) => {
       this.front_panel.visible = value;
@@ -283,6 +335,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
       this.deadfront.visible = value;
     });
     
+   
   }
 
 }
