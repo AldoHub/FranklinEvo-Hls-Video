@@ -28,6 +28,15 @@ body, html {
     padding: 16px;
 }
 
+.hotspot.active {
+    border-color: #fff;
+}
+
+.hotspot.active > div {
+    background-color: #fff;
+    color: #005daa;
+}
+
 .hotspot, .hotspot > div {
     border-radius: 50%;
 }

@@ -25,8 +25,10 @@ export class NexphaseComponent implements OnInit{
   private isDoorOpen:boolean = false;
   private isDeadfrontOn:boolean = false;
   public isPaneOpen: boolean = false;
+  public selectedItem!: number;
+  public currentPart!: Part; 
   
-  
+
   public togglersForm = new FormGroup({
     deadfronts: new FormControl<boolean | null>(true, {validators:[], nonNullable: true}),
     doors: new FormControl<boolean | null>(true, {validators:[], nonNullable: true}),  
@@ -45,7 +47,10 @@ export class NexphaseComponent implements OnInit{
 
   public selectPart($ev: Event, idx: number){
     console.log($ev.target, idx);
-    this.nexphaseService.showInfo();
+    this.nexphaseService.setPartdata(idx);
+    this.nexphaseService.toggleInfoPane(true);
+
+    //TODO --- rotate the camera etc, update the model pointer
   }
 
   public closeInfoPane(){
@@ -70,6 +75,14 @@ export class NexphaseComponent implements OnInit{
       this.isPaneOpen = value;
     });
 
+    this.nexphaseService.partData.subscribe((value) => {
+      this.currentPart = value;
+    })
+
+    this.nexphaseService.selectedItem.subscribe((value) => {
+      this.selectedItem = value;
+      console.log(value);
+    })
 
   }
 }

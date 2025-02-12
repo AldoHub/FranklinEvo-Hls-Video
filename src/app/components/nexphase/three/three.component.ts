@@ -9,6 +9,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { NexphaseService } from 'src/app/services/nexphase.service';
 import { ObjPart } from 'src/app/interfaces/objpart';
 
+import {TweenLite} from "gsap";
 
 @Component({
   selector: 'app-three',
@@ -60,6 +61,8 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private isGroup: boolean = true; //tells the way of rendering the objs on the scene - as a whole group or individual pieces
 
   private objParts!: ObjPart[];
+  private pastIndex!: number;
+  
 
   private async createScene(): Promise<void>{
     console.log("Creating Scene...");
@@ -127,16 +130,53 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 
   public createCSS2Objects(){
     //TODO --- use the parts in order to create the objects
-    //create the element wrapper
-    let outerDiv = document.createElement('div');
-    outerDiv.className = 'hotspot'
-    outerDiv.setAttribute('data-index', "0")
-    //create the element label
-    let elemDiv = document.createElement('div');
-    elemDiv.textContent = '1';
-    
-    outerDiv.appendChild(elemDiv);
+    let hotspots = [
+      {
+        "x": -0.2,
+        "y": 1.9,
+        "z": 1
+      },
+      { 
+        "x": -0.2,
+        "y": 1.6,
+        "z": 1
+      },
+      { 
+        "x": 0,
+        "y": 1.6,
+        "z": 1
+      },
+      { 
+        "x": 0.2,
+        "y": 1.5,
+        "z": 1
+      },
+      { 
+        "x": 0.1,
+        "y": 1,
+        "z": 1
+      },
+      { 
+        "x": 0.4,
+        "y": 1,
+        "z": 1
+      },
+      { 
+        "x": 0.1,
+        "y": 0.6,
+        "z": 1
+      }
+    ];
+ 
 
+ 
+
+
+
+    //TODO -- create the hotspots on the model
+    this.createModelHotspots(hotspots);
+
+    /*
     //create the CSS2D object using the element created before
     let hotspotLabel = new CSS2DObject(outerDiv);
     hotspotLabel.position.set( 0, 2, 1 );
@@ -147,20 +187,13 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     
     elemDiv.addEventListener("pointerdown", (e: any) => {
       e.stopPropagation();
-      //TODO --- should select the settings item and open the info bar 
       let target = e.target.parentNode;
       let idx = target.getAttribute('data-index');
-      //use the index to get the correct part
-      let items = document.querySelectorAll(".pane-item");
-      items[idx].classList.add('active');
-      
-      //TODO --- should open the info panel with the correct data
-      setTimeout(() => {
-        this.nexphaseService.isPaneOpen.next(true);
-      }, 400);
-      
+      //pass the index to the service
+      this.nexphaseService.setPartdata(parseInt(idx));
+      this.nexphaseService.toggleInfoPane(true);
     })
- 
+ */
   }
 
   private startRenderingLoop(){
@@ -198,6 +231,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.controls.enableZoom = true;
     this.controls.enablePan = false;
     this.controls.update();
+    //JEASINGS.update()
   };
 
   private async assembleBoxParts(): Promise<void>{
@@ -296,11 +330,46 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.objParts = this.nexphaseService.getObjParts();
   }
 
-  private findHotspots(){
-    let hotspot = document.querySelector(".hotspot");
-    console.log(hotspot)
-    hotspot?.addEventListener("click", () => {
-      alert("CLICKED!!");
+  private createModelHotspots(hotspots: any){
+
+    hotspots.map((h: any, i: number) => {
+      //create the element wrapper
+      let outerDiv = document.createElement('div');
+      outerDiv.className = 'hotspot'
+      outerDiv.setAttribute('data-index', i.toString())
+      //create the element label
+      let elemDiv = document.createElement('div');
+      elemDiv.textContent = (i + 1).toString();
+
+      outerDiv.appendChild(elemDiv);
+      //create the CSS2D object using the element created before
+      let hotspotLabel = new CSS2DObject(outerDiv);
+      hotspotLabel.position.set( h.x, h.y, h.z );
+      hotspotLabel.center.set( 1, 1 );
+      console.log(hotspotLabel)
+      this.THREEBox.add(hotspotLabel);
+      hotspotLabel.layers.set( 0 );
+      
+      elemDiv.addEventListener("pointerdown", (e: any) => {
+        e.stopPropagation();
+
+        let target = e.target.parentNode;
+        let idx = target.getAttribute('data-index');
+        
+        if(this.pastIndex){
+          let hotspots = document.querySelectorAll(".hotspot");
+          hotspots[this.pastIndex].classList.remove('active');
+        }
+
+        //animate the camera
+        //TweenLite.to(this.camera.position, 1, { x: 1, y: 1, z: 1 })
+        //pass the index to the service
+        this.nexphaseService.setPartdata(parseInt(idx));
+        this.pastIndex = idx;
+        e.target.parentNode.classList.add('active')
+        
+        this.nexphaseService.toggleInfoPane(true);
+      })
     })
   }
 

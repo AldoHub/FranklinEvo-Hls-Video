@@ -89,7 +89,7 @@
                     <div *ngIf="!shouldMinimizeSubmenu">
                     <div class="subcategory-title"><p>{{categorySelected}}</p></div>
                     <div class="submenu-item" *ngFor="let subcategory of subcategories | async; let i = index" [ngClass]="{'disabled-subcategory-title' : shouldDisableBtn}">
-                        <p [ngClass]="{'active': selectedItem === i}" (click)="onSubCategorySelect(subcategory, i)" class="section-title"><span class="rectangle" [ngClass]="{'active-rectangle': selectedItem === i}"></span><span>{{subcategory}}</span></p>
+                        <p (click)="onSubCategorySelect(subcategory, i)" [ngClass]="{'active': selectedItem === i}" class="section-title"><span class="rectangle" [ngClass]="{'active-rectangle': selectedItem === i}"></span><span>{{subcategory}}</span></p>
                     </div>
                 </div>
                 </div>

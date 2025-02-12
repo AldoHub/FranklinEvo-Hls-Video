@@ -117,7 +117,14 @@ export class NexphaseService {
   public isDoorOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isDeadfrontOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isPaneOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  
+  public partData: BehaviorSubject<Part> = new BehaviorSubject<Part>({
+    title: "",
+    image: "",
+    content: ""
+  });
+  private paneTime: number = 800;
+  public selectedItem: BehaviorSubject<number> = new BehaviorSubject<number>(20);
+
 
   public toggleDoor(value: boolean){
     this.isDoorOpen.next(value);
@@ -127,13 +134,6 @@ export class NexphaseService {
     this.isDeadfrontOn.next(value);
   }
 
-  public showInfo(){
-    //get data
-    console.log("fetching data");
-    //open info panel
-    this.isPaneOpen.next(true);
-  }
-
   public getPaneData(): Part[]{
     return this.parts;
   }
@@ -141,5 +141,17 @@ export class NexphaseService {
   public getObjParts(): ObjPart[]{
     return this.objParts;
   }
+
+  public setPartdata(idx: number): void{
+    this.partData.next(this.parts[idx]);
+    this.selectedItem.next(idx);
+  }
+
+  public toggleInfoPane(value: boolean): void{
+    setTimeout(() => {
+      this.isPaneOpen.next(value);
+    }, this.paneTime);
+  }
+
 
 }
