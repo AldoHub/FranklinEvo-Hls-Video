@@ -9,7 +9,9 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { NexphaseService } from 'src/app/services/nexphase.service';
 import { ObjPart } from 'src/app/interfaces/objpart';
 
-import {TweenLite} from "gsap";
+import { gsap } from "gsap";
+import * as TWEEN from '@tweenjs/tween.js';
+import { Hotspot } from 'src/app/interfaces/hotspot';
 
 @Component({
   selector: 'app-three',
@@ -61,6 +63,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private isGroup: boolean = true; //tells the way of rendering the objs on the scene - as a whole group or individual pieces
 
   private objParts!: ObjPart[];
+  public hotspots!: Hotspot[];
   private pastIndex!: number;
   
 
@@ -129,71 +132,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 
 
   public createCSS2Objects(){
-    //TODO --- use the parts in order to create the objects
-    let hotspots = [
-      {
-        "x": -0.2,
-        "y": 1.9,
-        "z": 1
-      },
-      { 
-        "x": -0.2,
-        "y": 1.6,
-        "z": 1
-      },
-      { 
-        "x": 0,
-        "y": 1.6,
-        "z": 1
-      },
-      { 
-        "x": 0.2,
-        "y": 1.5,
-        "z": 1
-      },
-      { 
-        "x": 0.1,
-        "y": 1,
-        "z": 1
-      },
-      { 
-        "x": 0.4,
-        "y": 1,
-        "z": 1
-      },
-      { 
-        "x": 0.1,
-        "y": 0.6,
-        "z": 1
-      }
-    ];
- 
-
- 
-
-
-
-    //TODO -- create the hotspots on the model
-    this.createModelHotspots(hotspots);
-
-    /*
-    //create the CSS2D object using the element created before
-    let hotspotLabel = new CSS2DObject(outerDiv);
-    hotspotLabel.position.set( 0, 2, 1 );
-    hotspotLabel.center.set( 1, 1 );
-    console.log(hotspotLabel)
-    this.THREEBox.add(hotspotLabel);
-    hotspotLabel.layers.set( 0 );
-    
-    elemDiv.addEventListener("pointerdown", (e: any) => {
-      e.stopPropagation();
-      let target = e.target.parentNode;
-      let idx = target.getAttribute('data-index');
-      //pass the index to the service
-      this.nexphaseService.setPartdata(parseInt(idx));
-      this.nexphaseService.toggleInfoPane(true);
-    })
- */
+    this.createModelHotspots(this.hotspots);
   }
 
   private startRenderingLoop(){
@@ -208,6 +147,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
       component.css2drenderer.render(component.scene, component.camera)
       requestAnimationFrame(render);
       //animations
+      TWEEN.update();
     }());
    
   }
@@ -231,7 +171,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.controls.enableZoom = true;
     this.controls.enablePan = false;
     this.controls.update();
-    //JEASINGS.update()
+   
   };
 
   private async assembleBoxParts(): Promise<void>{
@@ -244,6 +184,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 
   private async createOBJ(texturePath: string, materialPath: string, OBJPath: string, partName: string, idx: number){
    console.log("Creating ", partName)
+    
    //load the material
    await this.loaderMTL.load(materialPath, (mtl: MTLLoader.MaterialCreator) => {
       //setting material
@@ -300,9 +241,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         //check if its a group and render it as a whole at the end of the proccessing
         if(this.isGroup){
           if(this.objParts.length == (idx + 1)){
-            //this.addGroupToScene();
             this.addGroupToScene();
-            this.THREEBox.layers.enableAll();
           }
         }else{
           //add the objects to the scene individually
@@ -310,6 +249,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         }
       });
     })
+      
   }
 
   private centerGroupBox(){
@@ -330,6 +270,10 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.objParts = this.nexphaseService.getObjParts();
   }
 
+  public loadHotspots(){
+    this.hotspots = this.nexphaseService.getHotspots();
+  }
+
   private createModelHotspots(hotspots: any){
 
     hotspots.map((h: any, i: number) => {
@@ -345,30 +289,55 @@ export class ThreeComponent implements OnInit, AfterViewInit {
       //create the CSS2D object using the element created before
       let hotspotLabel = new CSS2DObject(outerDiv);
       hotspotLabel.position.set( h.x, h.y, h.z );
+
       hotspotLabel.center.set( 1, 1 );
-      console.log(hotspotLabel)
+      
       this.THREEBox.add(hotspotLabel);
       hotspotLabel.layers.set( 0 );
       
+      //add the event to the circles
       elemDiv.addEventListener("pointerdown", (e: any) => {
         e.stopPropagation();
 
         let target = e.target.parentNode;
         let idx = target.getAttribute('data-index');
-        
+      
         if(this.pastIndex){
           let hotspots = document.querySelectorAll(".hotspot");
           hotspots[this.pastIndex].classList.remove('active');
         }
-
+        
         //animate the camera
-        //TweenLite.to(this.camera.position, 1, { x: 1, y: 1, z: 1 })
+        //scope the globals to be used inside the gsap
+        let camera =this.camera;
+        let scene = this.scene;
+        let controls = this.controls;
+        let distance = 4;
+
+        //do the animation
+        gsap.to(this.camera.position, { x:this.hotspots[idx].x, y: this.hotspots[idx].y, z: distance,
+          duration: 2,
+          //ease: "back.out",
+          onUpdate: function(){
+            camera.lookAt( new THREE.Vector3(hotspots[idx].x, hotspots[idx].y, distance) ) 
+            //camera.position.applyMatrix4( hotspotLabel.matrixWorld )
+            controls.update();
+          },
+          onStart: function(){
+            //moveUp.disabled = true;
+          },
+          onComplete: function(){
+            //moveUp.disabled = false;
+          }
+          })
+          .play()
+
         //pass the index to the service
         this.nexphaseService.setPartdata(parseInt(idx));
         this.pastIndex = idx;
         e.target.parentNode.classList.add('active')
         
-        this.nexphaseService.toggleInfoPane(true);
+        //this.nexphaseService.toggleInfoPane(true);
       })
     })
   }
@@ -393,7 +362,8 @@ export class ThreeComponent implements OnInit, AfterViewInit {
  
     //get the object parts to render on scene
     this.getObjectParts();
-
+    this.loadHotspots();
+  
     //TODO --- HANDLE DESTROY OF SUBSCRIPTIONS
     this.nexphaseService.isDoorOpen.subscribe((value) => {
       this.front_panel.visible = value;

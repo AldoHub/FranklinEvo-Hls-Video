@@ -9,6 +9,7 @@ import { InputSwitchModule, InputSwitchOnChangeEvent } from 'primeng/inputswitch
 
 //interfaces
 import { Part } from 'src/app/interfaces/part';
+import { Hotspot } from 'src/app/interfaces/hotspot';
 
 @Component({
   selector: 'app-nexphase',
@@ -27,7 +28,8 @@ export class NexphaseComponent implements OnInit{
   public isPaneOpen: boolean = false;
   public selectedItem!: number;
   public currentPart!: Part; 
-  
+  private pastIndex!: number;
+
 
   public togglersForm = new FormGroup({
     deadfronts: new FormControl<boolean | null>(true, {validators:[], nonNullable: true}),
@@ -50,6 +52,17 @@ export class NexphaseComponent implements OnInit{
     this.nexphaseService.setPartdata(idx);
     this.nexphaseService.toggleInfoPane(true);
 
+    let hotspots = document.querySelectorAll(".hotspot");
+    console.log("---->", hotspots, this.pastIndex)
+    
+    if(this.pastIndex){        
+      hotspots[this.pastIndex].classList.remove('active');
+    }
+    
+    this.pastIndex = idx;
+    hotspots[idx].classList.add('active');
+    
+
     //TODO --- rotate the camera etc, update the model pointer
   }
 
@@ -62,6 +75,7 @@ export class NexphaseComponent implements OnInit{
     this.parts = this.nexphaseService.getPaneData();
   }
 
+  
   trackByTitle(index: number, item: any): number {
     return item.title;
   }
@@ -70,6 +84,7 @@ export class NexphaseComponent implements OnInit{
 
     //get the parts from the service
     this.loadPaneData();
+  
 
     this.nexphaseService.isPaneOpen.subscribe((value) => {
       this.isPaneOpen = value;

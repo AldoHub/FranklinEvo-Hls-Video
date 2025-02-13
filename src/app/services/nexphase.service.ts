@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, lastValueFrom, of, BehaviorSubject, Subject } from "rxjs";
 import { Part } from '../interfaces/part';
 import { ObjPart } from '../interfaces/objpart';
+import { Hotspot } from '../interfaces/hotspot';
 
 
 @Injectable({
@@ -114,6 +115,46 @@ export class NexphaseService {
     }
   ];
 
+
+  //hotspots coords
+  private hotspots: Hotspot[] = [
+    {
+      "x": -0.2,
+      "y": 1.9,
+      "z": 1
+    },
+    { 
+      "x": -0.2,
+      "y": 1.6,
+      "z": 1
+    },
+    { 
+      "x": 0,
+      "y": 1.6,
+      "z": 1
+    },
+    { 
+      "x": 0.2,
+      "y": 1.5,
+      "z": 1
+    },
+    { 
+      "x": 0.1,
+      "y": 1,
+      "z": 1
+    },
+    { 
+      "x": 0.4,
+      "y": 1,
+      "z": 1
+    },
+    { 
+      "x": 0.1,
+      "y": 0.6,
+      "z": 1
+    }
+  ];
+
   public isDoorOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isDeadfrontOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isPaneOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -140,6 +181,10 @@ export class NexphaseService {
 
   public getObjParts(): ObjPart[]{
     return this.objParts;
+  }
+
+  public getHotspots(): Hotspot[]{
+    return this.hotspots;
   }
 
   public setPartdata(idx: number): void{
