@@ -274,6 +274,8 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.hotspots = this.nexphaseService.getHotspots();
   }
 
+  //TODO --- use Raycaster to hide css labels
+
   private createModelHotspots(hotspots: any){
 
     hotspots.map((h: any, i: number) => {
@@ -313,21 +315,29 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         let scene = this.scene;
         let controls = this.controls;
         let distance = 4;
+        
+        //controls.maxPolarAngle = Math.PI / 2;
+        //controls.minPolarAngle = Math.PI / 3;
+        controls.maxDistance = distance;
+        controls.minDistance = distance;
 
         //do the animation
         gsap.to(this.camera.position, { x:this.hotspots[idx].x, y: this.hotspots[idx].y, z: distance,
           duration: 2,
           //ease: "back.out",
           onUpdate: function(){
+          
             camera.lookAt( new THREE.Vector3(hotspots[idx].x, hotspots[idx].y, distance) ) 
             //camera.position.applyMatrix4( hotspotLabel.matrixWorld )
             controls.update();
           },
           onStart: function(){
-            //moveUp.disabled = true;
+            //do stuff
           },
           onComplete: function(){
-            //moveUp.disabled = false;
+            //reset the distances
+            controls.maxDistance = 1000;
+            controls.minDistance = 0;
           }
           })
           .play()
@@ -337,7 +347,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         this.pastIndex = idx;
         e.target.parentNode.classList.add('active')
         
-        //this.nexphaseService.toggleInfoPane(true);
+        this.nexphaseService.toggleInfoPane(true);
       })
     })
   }
