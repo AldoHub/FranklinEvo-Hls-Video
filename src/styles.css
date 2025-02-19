@@ -41,6 +41,14 @@ body, html {
     border-radius: 50%;
 }
 
+
+.hotspot.hidden, .hotspot.hidden > div {
+    border: none;
+    background: transparent;
+    color: transparent;
+    pointer-events: none;
+}
+
 .inner-data-container{
     display: flex;
     justify-content: space-between;

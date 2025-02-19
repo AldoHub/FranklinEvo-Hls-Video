@@ -54,16 +54,28 @@ export class NexphaseComponent implements OnInit{
 
     let hotspots = document.querySelectorAll(".hotspot");
     console.log("---->", hotspots, this.pastIndex)
-    
+     /*
     if(this.pastIndex){        
+      
+     
+      let hotspots = document.querySelectorAll(".hotspot");
       hotspots[this.pastIndex].classList.remove('active');
     }
+    */  
     
+    let spots = Array.from(hotspots);
+
+  spots.map(spot => {
+    spot.classList.remove('active');
+  })
+
     this.pastIndex = idx;
     hotspots[idx].classList.add('active');
     
 
     //TODO --- rotate the camera etc, update the model pointer
+    this.nexphaseService.focusPart(idx);
+    
   }
 
   public closeInfoPane(){
