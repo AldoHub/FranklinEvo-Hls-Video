@@ -4,6 +4,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
+
 
 //service
 import { NexphaseService } from 'src/app/services/nexphase.service';
@@ -37,6 +39,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private loaderOBJ: OBJLoader = new OBJLoader();
   private loaderMTL: MTLLoader = new MTLLoader();
   private loaderTexture: THREE.TextureLoader = new THREE.TextureLoader(); 
+  private loaderRGBE: RGBELoader = new RGBELoader();
   private controls!: OrbitControls;
   private ambientLight!: THREE.AmbientLight;
   private directionalLight!: THREE.DirectionalLight;
@@ -52,6 +55,10 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private material: any;
   private texture: any;
   private normalTexture: any;
+  private concreteNormalTexture: any;
+  private ev: any;
+  public textures: any = [];
+  public trigger: boolean = false;
 
   //object parts
   private main_body!: THREE.Object3D;
@@ -66,7 +73,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private isGroup: boolean = true; //tells the way of rendering the objs on the scene - as a whole group or individual pieces
 
   private objParts!: ObjPart[];
-  public hotspots!: Hotspot[];
+  public hotspots: Hotspot[] = [];
   public cssLabels: any[] = [];
   private pastIndex!: number;
   
@@ -102,13 +109,13 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     //directional light
     this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     this.directionalLight.position.set(-180, 50, 20);
-    //this.directionalLight.position.set(180, 50, 20);
+    //this.directionalLight.position.set(-120, 50, 20);
+    //this.directionalLight.position.set(-180, 50, 20);
     this.directionalLight.castShadow = true;
     this.scene.add(this.directionalLight);
     
     //TODO --- FIX point lights
-    /* 
-   
+    /*
     this.light1 = new THREE.PointLight(0xffffff, 10);
     this.light1.position.set(0, 200, 400);
     this.scene.add(this.light1);
@@ -125,7 +132,24 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 
     //load the box
     console.log("Assembling Box...");
-    await this.assembleBoxParts();
+   
+    //wait for the textures to be loaded
+    await Promise.all(
+      this.objParts.map(async (part, idx) => {
+        if(!part.partName.includes('marker')){
+          this.textureLoad(part.partName, part.material, part.texture)
+        }
+
+        if(this.objParts.length == (idx + 1)){
+          this.trigger = true;
+        }
+      })
+    )
+
+    if(this.trigger){
+      await this.assembleBoxParts();
+    }
+   
   }
 
   //return the native element canvas
@@ -138,11 +162,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     return this.canvas.clientWidth / this.canvas.clientHeight;
   }
 
-/*
-  public createCSS2Objects(){
-      this.createModelHotspots(this.hotspots);
-  }
-*/
+
   private startRenderingLoop(){
     this.renderer = new THREE.WebGLRenderer({canvas: this.canvas, antialias: true});
     this.renderer.setPixelRatio(devicePixelRatio);
@@ -171,16 +191,17 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         raycaster.ray.direction.set(rd.x, rd.y, rd.z);
         let hits = raycaster.intersectObjects([model]);
      
-        if(i != labels.length -1){
+       //if(i != labels.length -1){
           if(hits.length > 0) {
             label.visible = false;
           }else{
             label.visible = true;
           }
-        }
+        //}
        
       });
-  */
+      */
+
     }());
    
   }
@@ -210,105 +231,236 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   };
 
   private async assembleBoxParts(): Promise<void>{
-    
-    //use the parts array
-    this.objParts.map((part, idx) => {
-      //create each part
-      this.createOBJ(part.texture, part.material, part.object, part.partName, idx)
-    });
+    this.loaderRGBE.load("/assets/model/textures/graffiti_shelter_4k.hdr", async(texture: any) => {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      //texture.colorSpace = THREE.SRGBColorSpace;
+      //this.scene.background = texture;
+      this.ev = texture;
+     
+      this.objParts.map(async(part, idx) => {
+        //create each part
+        this.createOBJ(part.texture, part.material, part.object, part.partName, idx)
+      })
+      
+      this.scene.environment = this.ev;
+      this.renderer.render(this.scene, this.camera);
+    })
 
   }
 
   private async createOBJ(texturePath: string, materialPath: string, OBJPath: string, partName: string, idx: number){
-   console.log("Creating ", partName)
-   
-   //load the material
-   await this.loaderMTL.load(materialPath, (mtl: MTLLoader.MaterialCreator) => {
+    let mat: any;
+    let normalTexture: any;
+    let normal: any;
     
-      const texturesSRC = [
-         texturePath,
-         "/assets/model/textures/metal_frame_N.png"
-      ].map(texture => texture)
-      
-      Promise.all(this.getTextures(texturesSRC))
-        .then(textures => {
-            
-            if(textures.length == 1) {
-              this.texture = '';
-              this.normalTexture = textures[0];
-            }else{
-              this.texture = textures[0];
-              this.normalTexture = textures[1]
+    if(!partName.includes("marker")){   
+      //set the material/textures
+      this.textures.map((t: any) => {
+        if(t.part === partName){
+          console.log(t, partName);
+            mat = t.mat;
+            if(t.textures){
+              normal = t.textures[0] ;
+              normalTexture = t.textures[1];
             }
-            //setting material
-            this.material = mtl;
-            this.material.preload();
-            this.loaderOBJ.setMaterials(this.material);
-            
-        })
-        .catch(err => console.error(err))
-
-          //setting model obj
-          this.loaderOBJ.load(OBJPath, (obj: THREE.Object3D ) => {
-          this.model = obj;
-        
-          if(this.isGroup){
-            //add to group
-            this.THREEBox.add(this.model);
           }
-        
-          //adding texture
-          this.model.traverse((o: any) => {
-            if(o.isMesh){
-              o.material.map = this.texture;
-              //load the normal map
-              o.material.normalMap = this.normalTexture;
-            }
-          });
-        
-          this.THREEBox.layers.enableAll();
-  
-          //assign to the global vars  
-        
-          if(partName == 'main_body') {
-            this.main_body = obj;
-          }
-          if(partName == 'back_panel') {
-            this.back_panel = obj;
-          }
-          if(partName == 'front_equipment') {
-            this.front_equipment = obj;
-          }
-          if(partName == 'deadfront') {
-            this.deadfront= obj;
-            //console.log("DEADFRONT:_ ", this.deadfront, obj)
-          }
-          if(partName == 'front_panel') {
-            this.front_panel= obj;
-          }
-  
-          if(partName.includes("marker")){
-            //this.markers = obj;
-            //console.log(this.markers)
-            this.markers.push(obj);
-          }
-          //check if its a group and render it as a whole at the end of the proccessing
-          if(this.isGroup){
-            if(this.objParts.length == (idx + 1)){
-              this.addGroupToScene();
-              this.createModelHotspots(this.markers)
-              //this.createModelHotspots(this.hotspots)
-            }
-          }else{
-            //add the objects to the scene individually
-            this.scene.add(this.model);
-          }
-          
-        });
-      
       })
-      
-  }
+
+      if(mat){
+        mat.preload();
+        this.loaderOBJ.setMaterials(mat)
+      }
+    } 
+
+    this.loaderOBJ.load(OBJPath, async(obj: THREE.Object3D ) => {
+      if(this.isGroup){
+        //add to group
+        this.THREEBox.add(obj);
+      }
+     
+      this.THREEBox.layers.enableAll();
+      //assign to the global vars  
+  
+      if(partName == 'main_body') {
+        this.main_body = obj;
+      }
+      if(partName == 'back_panel') {
+        this.back_panel = obj;
+      }
+      if(partName == 'front_equipment') {
+        this.front_equipment = obj;
+      }
+      if(partName == 'deadfront') {
+        this.deadfront= obj;
+        console.log("DEADFRONT:_ ", this.deadfront, obj)
+      }
+      if(partName == 'front_panel') {
+        this.front_panel= obj;
+      }
+      if(partName.includes("marker")){
+        this.markers.push(obj);
+      }
+
+      if(!partName.includes("marker")){    
+        obj.traverse((o:any) => {
+           if(o.isMesh){
+           
+           console.log("setting material")
+          
+           o.material = new THREE.MeshLambertMaterial({
+               map: normal,
+               normalMap: normalTexture, 
+               combine: THREE.MixOperation, 
+               envMap: this.ev,
+               reflectivity: 0.003,
+               //color: 'white',
+             
+             });
+             
+             
+           }
+        });
+      }
+   
+      if(this.isGroup){
+        if(this.objParts.length == (idx + 1)){
+          await this.renderer.compileAsync( obj, this.camera, this.scene );
+          //add the group and hotspots
+          this.addGroupToScene();
+          this.createModelHotspots();
+        }
+      }else{
+        //add the objects to the scene individually
+        this.scene.add(obj);
+      }
+
+    })
+}
+
+
+public async textureLoad(part: any, materialPath: any, texturePath: any): Promise<any>{
+   //load the materials and textures
+  this.loaderMTL.load(materialPath, async(mtl: MTLLoader.MaterialCreator) => {
+    let normal;
+
+    if(part == 'concrete'){
+      normal = "/assets/model/textures/concrete_N.png";
+    }else{
+      normal = "/assets/model/textures/metal_frame_N.png";
+    }
+    
+    const texturesSRC = [
+      texturePath,
+      normal,      
+    ].map(texture => texture);
+    
+    let textures = await Promise.all(this.getTextures(texturesSRC)).catch(err => console.log(err));
+    
+    this.textures.push({
+      part: part,
+      textures: textures,
+      mat: mtl
+    });
+
+  })
+  
+}
+
+// OG- WORKS!! BUT NO CORRECT TEXTURES
+/*
+private async createOBJ(texturePath: string, materialPath: string, OBJPath: string, partName: string, idx: number){
+  console.log("Creating ", partName)
+  
+  //load the material
+  await this.loaderMTL.load(materialPath, (mtl: MTLLoader.MaterialCreator) => {
+   
+     const texturesSRC = [
+        texturePath,
+        "/assets/model/textures/metal_frame_N.png"
+     ].map(texture => texture)
+     
+     Promise.all(this.getTextures(texturesSRC))
+       .then(textures => {
+           
+           if(textures.length == 1) {
+             this.texture = '';
+             this.normalTexture = textures[0];
+           }else{
+             this.texture = textures[0];
+             this.normalTexture = textures[1]
+           }
+           //setting material
+           this.material = mtl;
+           this.material.preload();
+           this.loaderOBJ.setMaterials(this.material);
+           
+       })
+       .catch(err => console.error(err))
+
+         //setting model obj
+         this.loaderOBJ.load(OBJPath, (obj: THREE.Object3D ) => {
+         this.model = obj;
+       
+         if(this.isGroup){
+           //add to group
+           this.THREEBox.add(this.model);
+         }
+       
+         //adding texture
+         this.model.traverse((o: any) => {
+           if(o.isMesh){
+             o.material.map = this.texture;
+             //load the normal map
+             o.material.normalMap = this.normalTexture;
+           }
+         });
+       
+         this.THREEBox.layers.enableAll();
+ 
+         //assign to the global vars  
+       
+         if(partName == 'main_body') {
+           this.main_body = obj;
+         }
+         if(partName == 'back_panel') {
+           this.back_panel = obj;
+         }
+         if(partName == 'front_equipment') {
+           this.front_equipment = obj;
+         }
+         if(partName == 'deadfront') {
+           this.deadfront= obj;
+           //console.log("DEADFRONT:_ ", this.deadfront, obj)
+         }
+         if(partName == 'front_panel') {
+           this.front_panel= obj;
+         }
+ 
+         if(partName.includes("marker")){
+           //this.markers = obj;
+           //console.log(this.markers)
+           this.markers.push(obj);
+         }
+         //check if its a group and render it as a whole at the end of the proccessing
+         if(this.isGroup){
+           if(this.objParts.length == (idx + 1)){
+             this.addGroupToScene();
+             this.createModelHotspots()
+            
+           }
+         }else{
+           //add the objects to the scene individually
+           this.scene.add(this.model);
+         }
+         
+       });
+     
+     })
+     
+ }
+ */
+
+
   //load the textures
   private getTextures (texturesSources: any) {
     const loader = new THREE.TextureLoader()
@@ -322,7 +474,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
             )
         })
     })
-}
+  }
 
   private centerGroupBox(){
     //center and add the model to the scene     
@@ -343,17 +495,14 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.objParts = this.nexphaseService.getObjParts();
   }
 
-  public loadHotspots(){
-    this.hotspots = this.nexphaseService.getHotspots();
-  }
 
-  private createModelHotspots(hotspots: any){
+  private createModelHotspots(){
    
    this.scene.updateMatrixWorld(true);
-console.log(this.markers)
+
     this.markers.map((h: any, i: number) => {
 
-      console.log(h.children[0])
+      //console.log(h.children[0])
       
       let mesh: THREE.Mesh =h.children[0];
       
@@ -362,12 +511,7 @@ console.log(this.markers)
       mesh.geometry.boundingBox?.getCenter(center);
       mesh.geometry.center();
       mesh.position.copy(center);
-      /*
-      let pos = new THREE.Vector3();
-     console.log(h);
-      pos.setFromMatrixPosition( h.matrixWorld );
-      console.log(pos);
-      */
+     
       h.layers.enableAll();
       //create the element wrapper
       let outerDiv = document.createElement('div');
@@ -381,18 +525,27 @@ console.log(this.markers)
      
       //create the CSS2D object using the element created before
       let hotspotLabel = new CSS2DObject(outerDiv);
-      hotspotLabel.position.set( mesh.position.x, mesh.position.y, mesh.position.z );
+      hotspotLabel.position.set( mesh.position.x, mesh.position.y, mesh.position.z);
       this.cssLabels.push(hotspotLabel);
       hotspotLabel.center.set( 1, 1 );
-      //h.add(hotspotLabel);
-      //this.markers.add(hotspotLabel)
-      h.add(hotspotLabel)
+      //h.add(hotspotLabel) // add it to the marker obj
+      this.THREEBox.add(hotspotLabel); //add it to the group itself
       hotspotLabel.layers.set( 0 );
+      h.visible = false;
+      //push to local hotspots
+      this.hotspots.push({
+        x: mesh.position.x, 
+        y: mesh.position.y, 
+        z: mesh.position.z
+      });
+
+      //push to service
+      this.nexphaseService._hotspots.next(this.hotspots);
      
       //add the event to the circles
       elemDiv.addEventListener("pointerdown", (e: any) => {
         e.stopPropagation();
-
+     
         let target = e.target.parentNode;
         let idx = target.getAttribute('data-index');
         
@@ -400,9 +553,9 @@ console.log(this.markers)
         let hotspots = document.querySelectorAll(".hotspot");
         let spots = Array.from(hotspots);
 
-      spots.map(spot => {
-        spot.classList.remove('active');
-      })
+        spots.map(spot => {
+          spot.classList.remove('active');
+        });
        
         this.nexphaseService.focusPart(idx);
         //pass the index to the service
@@ -411,67 +564,10 @@ console.log(this.markers)
         e.target.parentNode.classList.add('active')
         
         this.nexphaseService.toggleInfoPane(true);
-      })
-     
-    })
-    
    
-    
-    /*
-    hotspots.map((h: any, i: number) => {
-      //create the element wrapper
-      let outerDiv = document.createElement('div');
-      outerDiv.className = 'hotspot';
-      
-      if(i == hotspots.length -1){
-        outerDiv.className = 'hotspot hidden';
-      }else{
-        outerDiv.className = 'hotspot';
-      }
-        
-      outerDiv.setAttribute('data-index', i.toString())
-      //create the element label
-      let elemDiv = document.createElement('div');
-      elemDiv.textContent = (i + 1).toString();
-     
-
-      outerDiv.appendChild(elemDiv);
-      //create the CSS2D object using the element created before
-      let hotspotLabel = new CSS2DObject(outerDiv);
-      hotspotLabel.position.set( h.x, h.y, h.z );
-      this.cssLabels.push(hotspotLabel);
-      hotspotLabel.center.set( 1, 1 );
-      
-      this.THREEBox.add(hotspotLabel);
-      hotspotLabel.layers.set( 0 );
-      
-      
-      //add the event to the circles
-      elemDiv.addEventListener("pointerdown", (e: any) => {
-        e.stopPropagation();
-
-        let target = e.target.parentNode;
-        let idx = target.getAttribute('data-index');
-        
-        //TODO -- remove all actiive classes on the hotspots
-        let hotspots = document.querySelectorAll(".hotspot");
-        let spots = Array.from(hotspots);
-
-      spots.map(spot => {
-        spot.classList.remove('active');
-      })
-       
-        this.nexphaseService.focusPart(idx);
-        //pass the index to the service
-        this.nexphaseService.setPartdata(parseInt(idx));
-        this.pastIndex = idx;
-        e.target.parentNode.classList.add('active')
-        
-        this.nexphaseService.toggleInfoPane(true);
-      })
-        
+        })
+ 
     })
-      */
     
       
   }
@@ -498,17 +594,19 @@ console.log(this.markers)
  
     //get the object parts to render on scene
     this.getObjectParts();
-    this.loadHotspots();
+    //this.loadHotspots();
   
     //TODO --- HANDLE DESTROY OF SUBSCRIPTIONS
     this.nexphaseService.isDoorOpen.subscribe((value) => {
       this.front_panel.visible = value;
       this.back_panel.visible = value;
+     
     });
 
     this.nexphaseService.isDeadfrontOn.subscribe((value) => {
       this.deadfront.visible = value;
     });
+    
     
    
   }

@@ -97,13 +97,86 @@ export class NexphaseService {
       "material": "",
       "object": "/assets/model/obj/marker_2.obj"
     },
-   
+    {
+      "partName": "marker3",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker3.obj"
+    },
+    {
+      "partName": "marker4",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker4.obj"
+    },
+    {
+      "partName": "marker5",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker5.obj"
+    },
+    {
+      "partName": "marker6",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker6.obj"
+    },
+    {
+      "partName": "marker7",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker7.obj"
+    },
+    {
+      "partName": "marker8",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker8.obj"
+    },
+    {
+      "partName": "marker9",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker9.obj"
+    },
+    {
+      "partName": "marker10",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker10.obj"
+    },
+    {
+      "partName": "marker11",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker11.obj"
+    },
+    {
+      "partName": "marker12",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker12.obj"
+    },
+    {
+      "partName": "marker13",
+      "texture": "",
+      "material": "",
+      "object": "/assets/model/obj/marker13.obj"
+    },
+    
+    {
+      "partName": "concrete",
+      "texture": "/assets/model/textures/concrete_color.png",
+      "material": "/assets/model/materials/concrete.mtl",
+      "object": "/assets/model/obj/concrete.obj"
+    },
     {
       "partName": "main_body",
       "texture": "/assets/model/textures/metal_frame_alpha.png",
       "material": "/assets/model/materials/main_body.mtl",
       "object": "/assets/model/obj/main_body.obj"
     },
+   
     {
       "partName": "back_panel",
       "texture": "",
@@ -128,71 +201,10 @@ export class NexphaseService {
       "material": "/assets/model/materials/front_panel.mtl",
       "object": "/assets/model/obj/front_panel.obj"
     },
-    {
-      "partName": "concrete",
-      "texture": "/assets/model/textures/concrete.png",
-      "material": "/assets/model/materials/concrete.mtl",
-      "object": "/assets/model/obj/concrete.obj"
-    }
-      
+        
     
   ];
 
-
-  //hotspots coords
-  private hotspots: Hotspot[] = [
-    {
-      
-      "x": 0.266,
-      "y": 0.503,
-      "z": 0.219
-    } 
-    
-    /*
-    {
-      "x": -0.2,
-      "y": 1.9,
-      "z": 1
-    },
-  
-    { 
-      "x": -0.2,
-      "y": 1.6,
-      "z": 1
-    },
-    { 
-      "x": 0,
-      "y": 1.6,
-      "z": 1
-    },
-    { 
-      "x": 0.2,
-      "y": 1.5,
-      "z": 1
-    },
-    
-    { 
-      "x": 0.1,
-      "y": 1,
-      "z": 1
-    },
-    { 
-      "x": 0.4,
-      "y": 1,
-      "z": 1
-    },
-    { 
-      "x": 0.1,
-      "y": 0.6,
-      "z": 1
-    },
-    {
-      "x": 0,
-      "y": 0,
-      "z": 0
-    }
-      */
-  ];
 
   public isDoorOpen: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   public isDeadfrontOn: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
@@ -204,6 +216,8 @@ export class NexphaseService {
   });
   private paneTime: number = 800;
   public selectedItem: BehaviorSubject<number> = new BehaviorSubject<number>(20);
+  public _hotspots: BehaviorSubject<Hotspot[]> = new BehaviorSubject<Hotspot[]>([]);
+
 
   camera!: any;
   controls!: any;
@@ -232,10 +246,7 @@ export class NexphaseService {
     return this.objParts;
   }
 
-  public getHotspots(): Hotspot[]{
-    return this.hotspots;
-  }
-
+  
   public setPartdata(idx: number): void{
     this.partData.next(this.parts[idx]);
     this.selectedItem.next(idx);
@@ -253,18 +264,19 @@ export class NexphaseService {
     //let scene = this.scene;
     let controls = this.controls;
     let distance = 4;
-    let hotspots = this.hotspots
+    let hotspots = this._hotspots.getValue();
     //controls.maxPolarAngle = Math.PI / 2;
     //controls.minPolarAngle = Math.PI / 3;
     controls.maxDistance = distance;
     controls.minDistance = distance;
 
+    console.log(this._hotspots.getValue());
+
     //do the animation
-    gsap.to(this.camera.position, { x:this.hotspots[idx].x, y: this.hotspots[idx].y, z: distance,
-      duration: 2,
+    gsap.to(this.camera.position, { x:this._hotspots.getValue()[idx].x, y: 0, z: this._hotspots.getValue()[idx].z,
       //ease: "back.out",
       onUpdate: function(){
-        camera.lookAt( new THREE.Vector3(hotspots[idx].x, hotspots[idx].y, distance) ) 
+        camera.lookAt( new THREE.Vector3(hotspots[idx].x, hotspots[idx].y, hotspots[idx].z) ) 
         controls.update();
       },
       onStart: function(){
@@ -277,14 +289,8 @@ export class NexphaseService {
       }
       })
       .play()
-/*
-    //pass the index to the service
-    this.nexphaseService.setPartdata(parseInt(idx));
-    this.pastIndex = idx;
-    e.target.parentNode.classList.add('active')
-    
-    this.nexphaseService.toggleInfoPane(true);
-*/
+      
+
   }
 
 }
