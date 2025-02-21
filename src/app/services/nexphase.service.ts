@@ -85,124 +85,135 @@ export class NexphaseService {
   ];
 
   private objParts: ObjPart[] = [
+    
     {
-      "partName": "marker",
+      "partName": "marker_1",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker.obj"
+      "object": "/assets/model/obj/marker1_new.obj"
     },
     {
       "partName": "marker_2",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker_2.obj"
+      "object": "/assets/model/obj/marker2_new.obj"
     },
     {
-      "partName": "marker3",
+      "partName": "marker_3",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker3.obj"
+      "object": "/assets/model/obj/marker3_new.obj"
     },
     {
-      "partName": "marker4",
+      "partName": "marker_4",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker4.obj"
+      "object": "/assets/model/obj/marker4_new.obj"
     },
     {
-      "partName": "marker5",
+      "partName": "marker_5",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker5.obj"
+      "object": "/assets/model/obj/marker5_new.obj"
     },
     {
-      "partName": "marker6",
+      "partName": "marker_6",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker6.obj"
+      "object": "/assets/model/obj/marker6_new.obj"
     },
     {
-      "partName": "marker7",
+      "partName": "marker_7",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker7.obj"
+      "object": "/assets/model/obj/marker7_new.obj"
     },
     {
-      "partName": "marker8",
+      "partName": "marker_8",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker8.obj"
+      "object": "/assets/model/obj/marker8_new.obj"
     },
     {
-      "partName": "marker9",
+      "partName": "marker_9",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker9.obj"
+      "object": "/assets/model/obj/marker9_new.obj"
     },
     {
-      "partName": "marker10",
+      "partName": "marker_10",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker10.obj"
+      "object": "/assets/model/obj/marker10_new.obj"
     },
     {
-      "partName": "marker11",
+      "partName": "marker_11",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker11.obj"
+      "object": "/assets/model/obj/marker11_new.obj"
     },
     {
-      "partName": "marker12",
+      "partName": "marker_12",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker12.obj"
+      "object": "/assets/model/obj/marker12_new.obj"
     },
     {
-      "partName": "marker13",
+      "partName": "marker_13",
       "texture": "",
       "material": "",
-      "object": "/assets/model/obj/marker13.obj"
-    },
-    
-    {
-      "partName": "concrete",
-      "texture": "/assets/model/textures/concrete_color.png",
-      "material": "/assets/model/materials/concrete.mtl",
-      "object": "/assets/model/obj/concrete.obj"
-    },
-    {
-      "partName": "main_body",
-      "texture": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/main_body.mtl",
-      "object": "/assets/model/obj/main_body.obj"
-    },
-   
-    {
-      "partName": "back_panel",
-      "texture": "",
-      "material": "/assets/model/materials/back_panel.mtl",
-      "object": "/assets/model/obj/back_panel.obj"
-    },
-    {
-      "partName": "front_equipment",
-      "texture": "",
-      "material": "/assets/model/materials/front_equipment.mtl",
-      "object": "/assets/model/obj/front_equipment.obj"
-    },
-    {
-      "partName": "deadfront",
-      "texture": "",
-      "material": "/assets/model/materials/deadfront.mtl",
-      "object": "/assets/model/obj/deadfront.obj"
+      "object": "/assets/model/obj/marker13_new.obj"
     },
     {
       "partName": "front_panel",
       "texture": "/assets/model/textures/shell_front_door.png",
-      "material": "/assets/model/materials/front_panel.mtl",
-      "object": "/assets/model/obj/front_panel.obj"
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/front_panel_3.mtl",
+      "object": "/assets/model/obj/front_panel_3.obj"
     },
-        
-    
+    {
+      "partName": "back_panel",
+      "texture": "/assets/model/textures/shell_back_door.png",
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/back_panel_4.mtl",
+      "object": "/assets/model/obj/back_panel_4.obj"
+    },
+    {
+      "partName": "concrete",
+      "texture": "/assets/model/textures/concrete_color.png",
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/concrete_3.mtl",
+      "object": "/assets/model/obj/concrete_3.obj"
+    },  
+    {
+      "partName": "equipment",
+      "texture": "",
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/equipment_3.mtl",
+      "object": "/assets/model/obj/equipment_3.obj"
+    },
+    {
+      "partName": "front_deadfront",
+      "texture": "",
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/front_deadfront_3.mtl",
+      "object": "/assets/model/obj/front_deadfront_3.obj"
+    },
+    {
+      "partName": "back_deadfront",
+      "texture": "",
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/back_deadfront_3.mtl",
+      "object": "/assets/model/obj/back_deadfront_3.obj"
+    }, 
+    {
+      "partName": "main_body",
+      "texture": "/assets/model/textures/shell_monitoring_control_panel.png",
+      "texture2": "/assets/model/textures/metal_frame_alpha.png",
+      "material": "/assets/model/materials/main_body_3.mtl",
+      "object": "/assets/model/obj/main_body_3.obj"
+    },
+   
   ];
 
 
@@ -253,10 +264,12 @@ export class NexphaseService {
   }
 
   public toggleInfoPane(value: boolean): void{
+    /*
     setTimeout(() => {
       this.isPaneOpen.next(value);
     }, this.paneTime);
-  }
+  */
+    }
 
   public focusPart(idx: number){
 

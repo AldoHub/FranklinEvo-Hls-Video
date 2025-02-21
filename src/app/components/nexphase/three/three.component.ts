@@ -66,6 +66,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private front_equipment!: THREE.Object3D;
   private front_panel!: THREE.Object3D;
   private deadfront!: THREE.Object3D;
+  private deadfront2!: THREE.Object3D;
   private markers: THREE.Object3D[] = [];
   //private markers!: THREE.Object3D;
   private THREEBox: THREE.Group = new THREE.Group();
@@ -137,7 +138,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     await Promise.all(
       this.objParts.map(async (part, idx) => {
         if(!part.partName.includes('marker')){
-          this.textureLoad(part.partName, part.material, part.texture)
+          this.textureLoad(part.partName, part.material, part.texture, part.texture2)
         }
 
         if(this.objParts.length == (idx + 1)){
@@ -242,7 +243,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         this.createOBJ(part.texture, part.material, part.object, part.partName, idx)
       })
       
-      this.scene.environment = this.ev;
+      //this.scene.environment = this.ev;
       this.renderer.render(this.scene, this.camera);
     })
 
@@ -252,6 +253,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     let mat: any;
     let normalTexture: any;
     let normal: any;
+    let ext: any;
     
     if(!partName.includes("marker")){   
       //set the material/textures
@@ -260,8 +262,13 @@ export class ThreeComponent implements OnInit, AfterViewInit {
           console.log(t, partName);
             mat = t.mat;
             if(t.textures){
+      
               normal = t.textures[0] ;
               normalTexture = t.textures[1];
+
+              if(t.textures[2]){
+                ext = t.textures[2];
+              }
             }
           }
       })
@@ -271,6 +278,8 @@ export class ThreeComponent implements OnInit, AfterViewInit {
         this.loaderOBJ.setMaterials(mat)
       }
     } 
+
+ 
 
     this.loaderOBJ.load(OBJPath, async(obj: THREE.Object3D ) => {
       if(this.isGroup){
@@ -283,43 +292,222 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   
       if(partName == 'main_body') {
         this.main_body = obj;
+        console.log(obj)
       }
       if(partName == 'back_panel') {
         this.back_panel = obj;
+        console.log(obj)
       }
       if(partName == 'front_equipment') {
         this.front_equipment = obj;
       }
-      if(partName == 'deadfront') {
+      if(partName == 'front_deadfront') {
         this.deadfront= obj;
-        console.log("DEADFRONT:_ ", this.deadfront, obj)
+      }
+      if(partName == 'back_deadfront') {
+        this.deadfront2= obj;
       }
       if(partName == 'front_panel') {
         this.front_panel= obj;
+        console.log(obj)
       }
       if(partName.includes("marker")){
         this.markers.push(obj);
       }
 
+
       if(!partName.includes("marker")){    
+       
+       
         obj.traverse((o:any) => {
            if(o.isMesh){
-           
-           console.log("setting material")
-          
-           o.material = new THREE.MeshLambertMaterial({
-               map: normal,
-               normalMap: normalTexture, 
-               combine: THREE.MixOperation, 
-               envMap: this.ev,
-               reflectivity: 0.003,
-               //color: 'white',
-             
-             });
-             
-             
-           }
-        });
+
+            //--- FRONT PANEL
+            if(o.name == 'front_panel_door_handle'){     
+              o.material = new THREE.MeshLambertMaterial({
+                color: 0xDAE1DB,
+              });
+            }
+            if(o.name == 'front_panel_shell_front_door'){ 
+              o.material = new THREE.MeshLambertMaterial({
+                map: normal,
+                //normalMap: normalTexture, 
+                combine: THREE.MixOperation, 
+                envMap: this.ev,
+                reflectivity: 0.005,
+              });
+            }
+            //--- BACK PANEL
+            if(o.name == 'back_panel_door_handle'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xDAE1DB,
+              });
+            }
+            if(o.name == 'back_panel_shell_back_door'){ 
+              o.material = new THREE.MeshLambertMaterial({
+                map: normal,
+                //normalMap: normalTexture, 
+                combine: THREE.MixOperation, 
+                envMap: this.ev,
+                reflectivity: 0.003,
+              });
+            }
+            //--- CONCRETE
+            if(o.name == 'concrete_concrete'){ 
+              o.material = new THREE.MeshLambertMaterial({
+                map: normal,
+                //normalMap: normalTexture, 
+                combine: THREE.MixOperation, 
+                envMap: this.ev,
+                reflectivity: 0.003,
+              });
+            }
+            //--- EQUIPMENT
+            if(o.name == 'equipment_stainless_steel'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xFFFFFF,
+                metalness: 1
+              });
+            }
+            if(o.name == 'equipment_shell'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xFFFFFF,
+              });
+            }
+            if(o.name == 'equipment_nuts_and_bolts'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xD3D3D3,
+                metalness: 1
+              });
+            }
+            if(o.name == 'equipment_threads'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xB3B3B3,
+              });
+            }
+            if(o.name == 'equipment_equipment_1'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0x6E6E6E,
+              });
+            }
+            //--- FRONT DEADFRONT
+            if(o.name == 'front_deadfront_stainless_steel'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                metalness: 1,
+              });
+            }
+            if(o.name == 'front_deadfront_shell'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xFFFFFF,
+              });
+            }
+            if(o.name == 'front_deadfront_nuts_and_bolts'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xD3D3D3,
+                metalness: 1
+              });
+            }
+            if(o.name == 'front_deadfront_equipment_1'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0x6E6E6E,
+              });
+            }
+            //--- BACK DEADFRONT
+            if(o.name == 'back_deadfront_vents'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0x3F3F3F,
+              });
+            }
+            if(o.name == 'back_deadfront_shell_monitoring_control_panel'){
+              o.material = new THREE.MeshStandardMaterial({
+                map: normal,
+                normalMap: normalTexture,  
+              });
+            }
+            if(o.name == 'back_deadfront_stainless_steel_w_holes'){
+              ext.wrapS = THREE.RepeatWrapping;
+              ext.wrapT = THREE.RepeatWrapping;
+              ext.repeat.set(2, 1); // Adjust the repeat values as needed
+              o.material = new THREE.MeshStandardMaterial({
+                map: ext,
+                normalMap: normalTexture,  
+              });
+            }
+            if(o.name == 'back_deadfront_shell' || o.name == 'back_deadfront_shell_main_breaker'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xFFFFFF,
+              });
+            }
+            if(o.name == 'back_deadfront_equipment_1' || o.name == 'back_deadfront_equipment_2'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0x6E6E6EFF,
+              });
+            }
+            if(o.name == 'back_deadfront_stainless_steel'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xFFFFFF,
+                metalness: 1
+              });
+            }
+            if(o.name == 'back_deadfront_nuts_and_bolts'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xD3D3D3,
+                metalness: 1
+              });
+            }
+            //--- MAIN BODY
+            if(o.name == 'main_body_stainless_steel'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                metalness: 1,
+              });
+            }
+            if(o.name == 'main_body_stainless_steel_w_holes'){
+              //repat the material
+              ext.wrapS = THREE.RepeatWrapping;
+              ext.wrapT = THREE.RepeatWrapping;
+              ext.repeat.set(2, 1); // Adjust the repeat values as needed
+              o.material = new THREE.MeshStandardMaterial({
+                map: ext,
+                normalMap: normalTexture,  
+              });
+            }
+            if(o.name == 'main_body_vents'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0x3F3F3F,
+              });
+            }
+            if(o.name == 'main_body_shell_monitoring_control_panel'){
+              o.material = new THREE.MeshStandardMaterial({
+                map: normal,
+                //normalMap: normalTexture,  
+              });
+            }
+            
+            if(o.name == 'main_body_nuts_and_bolts'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0xD3D3D3FF,
+                metalness: 1
+              });
+            }
+            if(o.name == 'main_body_equipment_1' || o.name == 'main_body_equipment_2'){
+              o.material = new THREE.MeshStandardMaterial({
+                color: 0x6E6E6E,
+              });
+            }
+            if(o.name == 'main_body_shell'){
+              o.material = new THREE.MeshLambertMaterial({
+                color: 0xFFFFFF,
+                normalMap: normalTexture,
+                
+                envMap: this.ev,
+                reflectivity: 0.003,
+              });
+            }
+            }  
+          });
+       
       }
    
       if(this.isGroup){
@@ -338,7 +526,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 }
 
 
-public async textureLoad(part: any, materialPath: any, texturePath: any): Promise<any>{
+public async textureLoad(part: any, materialPath: any, texturePath: string, texturePath2: string | undefined): Promise<any>{
    //load the materials and textures
   this.loaderMTL.load(materialPath, async(mtl: MTLLoader.MaterialCreator) => {
     let normal;
@@ -352,6 +540,7 @@ public async textureLoad(part: any, materialPath: any, texturePath: any): Promis
     const texturesSRC = [
       texturePath,
       normal,      
+      texturePath2
     ].map(texture => texture);
     
     let textures = await Promise.all(this.getTextures(texturesSRC)).catch(err => console.log(err));
@@ -365,101 +554,6 @@ public async textureLoad(part: any, materialPath: any, texturePath: any): Promis
   })
   
 }
-
-// OG- WORKS!! BUT NO CORRECT TEXTURES
-/*
-private async createOBJ(texturePath: string, materialPath: string, OBJPath: string, partName: string, idx: number){
-  console.log("Creating ", partName)
-  
-  //load the material
-  await this.loaderMTL.load(materialPath, (mtl: MTLLoader.MaterialCreator) => {
-   
-     const texturesSRC = [
-        texturePath,
-        "/assets/model/textures/metal_frame_N.png"
-     ].map(texture => texture)
-     
-     Promise.all(this.getTextures(texturesSRC))
-       .then(textures => {
-           
-           if(textures.length == 1) {
-             this.texture = '';
-             this.normalTexture = textures[0];
-           }else{
-             this.texture = textures[0];
-             this.normalTexture = textures[1]
-           }
-           //setting material
-           this.material = mtl;
-           this.material.preload();
-           this.loaderOBJ.setMaterials(this.material);
-           
-       })
-       .catch(err => console.error(err))
-
-         //setting model obj
-         this.loaderOBJ.load(OBJPath, (obj: THREE.Object3D ) => {
-         this.model = obj;
-       
-         if(this.isGroup){
-           //add to group
-           this.THREEBox.add(this.model);
-         }
-       
-         //adding texture
-         this.model.traverse((o: any) => {
-           if(o.isMesh){
-             o.material.map = this.texture;
-             //load the normal map
-             o.material.normalMap = this.normalTexture;
-           }
-         });
-       
-         this.THREEBox.layers.enableAll();
- 
-         //assign to the global vars  
-       
-         if(partName == 'main_body') {
-           this.main_body = obj;
-         }
-         if(partName == 'back_panel') {
-           this.back_panel = obj;
-         }
-         if(partName == 'front_equipment') {
-           this.front_equipment = obj;
-         }
-         if(partName == 'deadfront') {
-           this.deadfront= obj;
-           //console.log("DEADFRONT:_ ", this.deadfront, obj)
-         }
-         if(partName == 'front_panel') {
-           this.front_panel= obj;
-         }
- 
-         if(partName.includes("marker")){
-           //this.markers = obj;
-           //console.log(this.markers)
-           this.markers.push(obj);
-         }
-         //check if its a group and render it as a whole at the end of the proccessing
-         if(this.isGroup){
-           if(this.objParts.length == (idx + 1)){
-             this.addGroupToScene();
-             this.createModelHotspots()
-            
-           }
-         }else{
-           //add the objects to the scene individually
-           this.scene.add(this.model);
-         }
-         
-       });
-     
-     })
-     
- }
- */
-
 
   //load the textures
   private getTextures (texturesSources: any) {
@@ -494,7 +588,6 @@ private async createOBJ(texturePath: string, materialPath: string, OBJPath: stri
   private getObjectParts(){
     this.objParts = this.nexphaseService.getObjParts();
   }
-
 
   private createModelHotspots(){
    
@@ -605,6 +698,7 @@ private async createOBJ(texturePath: string, materialPath: string, OBJPath: stri
 
     this.nexphaseService.isDeadfrontOn.subscribe((value) => {
       this.deadfront.visible = value;
+      this.deadfront2.visible = value;
     });
     
     
