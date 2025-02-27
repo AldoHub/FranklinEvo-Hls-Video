@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, AfterContentInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, HostListener, AfterContentInit, ViewChild, ElementRef, inject } from '@angular/core';
 import { DataService } from '../../services/data.service';
 import { SplitscreenService } from '../../services/splitscreen.service';
 import { BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import Hls from 'hls.js';
+import { NexphaseService } from 'src/app/services/nexphase.service';
 
 let catTimer: any;
 let timer: any;
@@ -122,6 +123,10 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   //nexphase
   public isNexphase: boolean = false;
+  public hideCanvas: boolean = true;
+  public isAppLoading: boolean = true;
+
+  public nexphaseService = inject(NexphaseService);
 
   public checkWindowSize(innerwidth: number){
     if(innerwidth <= 579){
@@ -202,6 +207,10 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   public async onCategorySelect(name:string, $event: Event, slug:string){
 
+    //this.toggleNexphase(false);
+
+    this.hideCanvas = true;
+
     this.isVariableSpeed = false;
     this.shouldMinimizeSubmenu = false;
 
@@ -258,18 +267,18 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       this.isVimeoLoading = false;
       //show the category player
       this.showCategoryVideoPlayer = true;
-     
+   
       //set the timer for pausing the category video
       catTimer = setTimeout(() => {
         this.shouldDisableBtn = false;
         this.shouldShowSubmenu = true;
       }, v_time);
-
+  
       //ui cleaning
       this.isMenuActive = false;
       this.showCategoryVideoPlayer = true;
       this.breadcrumbsShouldBeVisible = true;
-      
+     
 
     }
 
@@ -303,6 +312,8 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
 
   public async onSubCategorySelect(name:string, index:any){
    
+    this.hideCanvas = true;
+
     if(!this.isDesktop){
       //close the menu
       this.isMenuActive = false;
@@ -315,6 +326,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
     this.isVimeoLoading = true;
+   
    
     //alert(timer);
     if(timer){
@@ -349,11 +361,24 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     }
 
 */
+
+
     if(name == "Pump Selection"){
       this.toggleSplitscreen(true);
     }else if(name == 'Nexphase'){
-      this.toggleNexphase(true);
+      //this.toggleNexphase(true);
+      if(this.isNexphase == false){
+        this.isNexphase = true;
+      }
+      this.hideCanvas = false;
+      this.isSubVideoRunning = false;
       this.isVimeoLoading = false;
+      //this.categoryVideoElement.pause();
+      this.subCategoryVideoElement.pause();
+      this.subCategoryVideo = '';
+      this.categorySelected = '';
+      this.subCategorySelected = '';
+     
     }else{
       this.disableSpecialSections();
       this.subcategoryVideosHandler(categoryData);
@@ -551,10 +576,16 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
   }
 
   public toggleNexphase(isSelected: boolean){
-    alert("NEXPHASE SELECTED");
     this.isNexphase = isSelected;
     //NOTE --- might need to disable/ hide videos***
-
+    //this.showSubCategoryVideoPlayer = false;
+    this.isSubVideoRunning = false;
+    this.isVimeoLoading = false;
+    //this.categoryVideoElement.pause();
+    this.subCategoryVideoElement.pause();
+    this.subCategoryVideo = '';
+    this.categorySelected = '';
+    this.subCategorySelected = '';
     //TODO --- add observable for this prop
   }
 
@@ -634,6 +665,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
       });
     }
 
+
   }
 
 
@@ -647,11 +679,7 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
     //-- CHECK WINDOW WIDTH
     this.checkWindowSize(this.innerWidth);
     
-
     this.isVimeoLoading = true;
-    console.log("component initialized!");
-
-    
     this.isVideoPaused.subscribe((value) => {
       if(value){
         //console.log("SUBJECT CHANGED!!")
@@ -663,7 +691,19 @@ export class MainComponent implements OnInit, AfterViewInit, OnDestroy{
         this.isVideoPaused.next(false);
       }
     })
-    
+  
+  /*  setTimeout(() => {
+  
+    this.isAppLoading = false;
+    console.log("component initialized!");
+   }, 10000)
+   */
+    this.nexphaseService.loading.subscribe((value) => {
+      if(value == "LOADED"){
+        this.isAppLoading = false;
+      }
+    })
+
   }
 
   ngOnDestroy(): void {

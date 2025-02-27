@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ThreeComponent } from './three/three.component';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
@@ -16,7 +16,8 @@ import { Hotspot } from 'src/app/interfaces/hotspot';
   standalone: true,
   templateUrl: './nexphase.component.html',
   styleUrls: ['./nexphase.component.css'],
-  imports: [ThreeComponent, CommonModule, InputSwitchModule, ReactiveFormsModule]
+  imports: [ThreeComponent, CommonModule, InputSwitchModule, ReactiveFormsModule],
+  
 })
 export class NexphaseComponent implements OnInit{
  
@@ -29,7 +30,8 @@ export class NexphaseComponent implements OnInit{
   public selectedItem!: number;
   public currentPart!: Part; 
   private pastIndex!: number;
-
+  public loadingNumbers: string = '';
+  public hideLoadingMessage: boolean = true;
 
   public togglersForm = new FormGroup({
     deadfronts: new FormControl<boolean | null>(true, {validators:[], nonNullable: true}),
@@ -53,15 +55,8 @@ export class NexphaseComponent implements OnInit{
     this.nexphaseService.toggleInfoPane(true);
 
     let hotspots = document.querySelectorAll(".hotspot");
-    console.log("---->", hotspots, this.pastIndex)
-     /*
-    if(this.pastIndex){        
-      
-     
-      let hotspots = document.querySelectorAll(".hotspot");
-      hotspots[this.pastIndex].classList.remove('active');
-    }
-    */  
+    //console.log("---->", hotspots, this.pastIndex)
+  
     
     let spots = Array.from(hotspots);
 
@@ -87,10 +82,10 @@ export class NexphaseComponent implements OnInit{
     this.parts = this.nexphaseService.getPaneData();
   }
 
-  
   trackByTitle(index: number, item: any): number {
     return item.title;
   }
+
 
   ngOnInit(): void {
 
@@ -110,6 +105,8 @@ export class NexphaseComponent implements OnInit{
       this.selectedItem = value;
       console.log(value);
     })
+
+   
 
   }
 }

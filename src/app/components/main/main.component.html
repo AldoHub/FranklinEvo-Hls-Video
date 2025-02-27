@@ -1,10 +1,14 @@
 <!--- main component holds the base of the application-->
-<div class="container-inner-wrapper">
-
+<div style="position:absolute; top: 50%; left: 0; right: 0; margin: 0 auto; color: #fff; font-size: 50px;
+    width: 100%; text-align: center;" *ngIf="isAppLoading">Loading app... please wait</div>
+<div [ngClass]="{'hide-canvas' : isAppLoading}" class="container-inner-wrapper">
+<!-- -->
     <!-- spinner component -->
+    <!--<app-spinner *ngIf="isVimeoLoading"></app-spinner>-->
+    
+
     <app-spinner *ngIf="isVimeoLoading"></app-spinner>
-
-
+    
     <!-- START --- videos -->
     <div class="category-video-wrapper">
 
@@ -105,14 +109,16 @@
                 <app-splitscreen class="full-width" *ngIf="isVariableSpeed"></app-splitscreen>
                 <!-- END --- splitscreen -->   
             
-                <!-- START --- Nexphase  -->   
-                <app-nexphase class="full-width" *ngIf="isNexphase"></app-nexphase>
-                <!-- END --- Nexphase --> 
             </div>
             <!-- END --- subcategories menu -->
 
         </div>
     </div>
+
+    
+    <!-- START --- Nexphase   -->   
+    <app-nexphase class="full-width" [ngClass]="{'hide-canvas' : hideCanvas}" style="top: 0px"></app-nexphase>
+    <!-- END --- Nexphase --> 
     <!-- END --- content wrapper -->
 </div>
 

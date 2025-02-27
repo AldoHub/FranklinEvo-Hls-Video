@@ -88,131 +88,151 @@ export class NexphaseService {
     
     {
       "partName": "marker_1",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker1_new.obj"
     },
     {
       "partName": "marker_2",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker2_new.obj"
     },
     {
       "partName": "marker_3",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker3_new.obj"
     },
     {
       "partName": "marker_4",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker4_new.obj"
     },
     {
       "partName": "marker_5",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker5_new.obj"
     },
     {
       "partName": "marker_6",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker6_new.obj"
     },
     {
       "partName": "marker_7",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker7_new.obj"
     },
     {
       "partName": "marker_8",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker8_new.obj"
     },
     {
       "partName": "marker_9",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker9_new.obj"
     },
     {
       "partName": "marker_10",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker10_new.obj"
     },
     {
       "partName": "marker_11",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker11_new.obj"
     },
     {
       "partName": "marker_12",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker12_new.obj"
     },
     {
       "partName": "marker_13",
-      "texture": "",
+      "normal": "",
+      "alpha": "",
       "material": "",
       "object": "/assets/model/obj/marker13_new.obj"
     },
+    
     {
       "partName": "front_panel",
-      "texture": "/assets/model/textures/shell_front_door.png",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/front_panel_3.mtl",
-      "object": "/assets/model/obj/front_panel_3.obj"
+      "normal": "/assets/model/textures/front_panel/Normal.png",
+      "alpha": "/assets/model/textures/front_panel/Alpha.png",
+      "material": "/assets/model/materials/front_panel_new.mtl",
+      "object": "/assets/model/obj/front_panel_new.obj"
     },
+   
     {
       "partName": "back_panel",
-      "texture": "/assets/model/textures/shell_back_door.png",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/back_panel_4.mtl",
-      "object": "/assets/model/obj/back_panel_4.obj"
+      "normal": "/assets/model/textures/front_panel/Normal.png",
+      "alpha": "/assets/model/textures/front_panel/Alpha.png",
+      "material": "/assets/model/materials/back_panel_new.mtl",
+      "object": "/assets/model/obj/back_panel_new.obj"
     },
+     
     {
       "partName": "concrete",
-      "texture": "/assets/model/textures/concrete_color.png",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/concrete_3.mtl",
-      "object": "/assets/model/obj/concrete_3.obj"
+      "normal": "/assets/model/textures/front_panel/Normal.png",
+      "alpha": "/assets/model/textures/front_panel/Alpha.png",
+      "material": "/assets/model/materials/concrete_new.mtl",
+      "object": "/assets/model/obj/concrete_new.obj"
     },  
+    
     {
       "partName": "equipment",
-      "texture": "",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/equipment_3.mtl",
-      "object": "/assets/model/obj/equipment_3.obj"
+      "normal": "/assets/model/textures/front_panel/Normal.png",
+      "alpha": "/assets/model/textures/front_panel/Alpha.png",
+      "material": "/assets/model/materials/equipment_new.mtl",
+      "object": "/assets/model/obj/equipment_new.obj"
     },
     {
       "partName": "front_deadfront",
-      "texture": "",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/front_deadfront_3.mtl",
-      "object": "/assets/model/obj/front_deadfront_3.obj"
+      "normal": "/assets/model/textures/front_panel/Normal.png",
+      "alpha": "/assets/model/textures/front_panel/Alpha.png",
+      "material": "/assets/model/materials/front_deadfront_new.mtl",
+      "object": "/assets/model/obj/front_deadfront_new.obj"
     },
+    
     {
       "partName": "back_deadfront",
-      "texture": "",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/back_deadfront_3.mtl",
-      "object": "/assets/model/obj/back_deadfront_3.obj"
+      "normal": "/assets/model/textures/front_panel/Normal.png",
+      "alpha": "/assets/model/textures/front_panel/Alpha.png",
+      "material": "/assets/model/materials/back_deadfront_new.mtl",
+      "object": "/assets/model/obj/back_deadfront_new.obj"
     }, 
+    
     {
       "partName": "main_body",
-      "texture": "/assets/model/textures/shell_monitoring_control_panel.png",
-      "texture2": "/assets/model/textures/metal_frame_alpha.png",
-      "material": "/assets/model/materials/main_body_3.mtl",
-      "object": "/assets/model/obj/main_body_3.obj"
+      "normal": "/assets/model/textures/main_body/Normal.png",
+      "alpha": "/assets/model/textures/main_body/Alpha.png",
+      "material": "/assets/model/materials/main_body_new.mtl",
+      "object": "/assets/model/obj/main_body_new.obj"
     },
+   
    
   ];
 
@@ -228,6 +248,8 @@ export class NexphaseService {
   private paneTime: number = 800;
   public selectedItem: BehaviorSubject<number> = new BehaviorSubject<number>(20);
   public _hotspots: BehaviorSubject<Hotspot[]> = new BehaviorSubject<Hotspot[]>([]);
+  public loading: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
 
 
   camera!: any;
@@ -297,8 +319,8 @@ export class NexphaseService {
       },
       onComplete: function(){
         //reset the distances
-        controls.maxDistance = 1000;
-        controls.minDistance = 0;
+        controls.maxDistance = 10;
+        controls.minDistance = 1;
       }
       })
       .play()

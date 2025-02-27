@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, Input, OnInit, ViewChild, inject, HostListener } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, Input, OnInit, ViewChild, inject, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
@@ -18,7 +18,8 @@ import { Hotspot } from 'src/app/interfaces/hotspot';
   selector: 'app-three',
   standalone: true,
   templateUrl: './three.component.html',
-  styleUrls: ['./three.component.css']
+  styleUrls: ['./three.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ThreeComponent implements OnInit, AfterViewInit {
 
@@ -38,7 +39,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private scene!: THREE.Scene;
   private loaderOBJ: OBJLoader = new OBJLoader();
   private loaderMTL: MTLLoader = new MTLLoader();
-  private loaderTexture: THREE.TextureLoader = new THREE.TextureLoader(); 
+  //private loaderTexture: THREE.TextureLoader = new THREE.TextureLoader(); 
   private loaderRGBE: RGBELoader = new RGBELoader();
   private controls!: OrbitControls;
   private ambientLight!: THREE.AmbientLight;
@@ -51,11 +52,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private light3!: THREE.PointLight;
 
   private light4!: THREE.PointLight;
-  private model: any;
-  private material: any;
-  private texture: any;
-  private normalTexture: any;
-  private concreteNormalTexture: any;
+  public pastIndex!: number;
   private ev: any;
   public textures: any = [];
   public trigger: boolean = false;
@@ -76,12 +73,11 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   private objParts!: ObjPart[];
   public hotspots: Hotspot[] = [];
   public cssLabels: any[] = [];
-  private pastIndex!: number;
-  
+
 
   private async createScene(): Promise<void>{
     console.log("Creating Scene...");
-    
+   
     //Create the scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xe9eaea);
@@ -97,24 +93,26 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 
     this.nexphaseService.setCameraInstance(this.camera);
 
-    this.camera.position.x = -2;
+    this.camera.position.x = -2; //-2
     this.camera.position.y = 1.3;
     this.camera.position.z = 3;//4
-    
+   
     //ambient light
+   
     this.ambientLight = new THREE.AmbientLight(0xffffff, 1);
     this.ambientLight.castShadow = true;
     this.scene.add(this.ambientLight);
    
-    
+    /*
     //directional light
     this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    this.directionalLight.position.set(-180, 50, 20);
-    //this.directionalLight.position.set(-120, 50, 20);
+    //this.directionalLight.position.set(-180, 50, 20);
+    this.directionalLight.position.set(180, 50, 20);
     //this.directionalLight.position.set(-180, 50, 20);
     this.directionalLight.castShadow = true;
     this.scene.add(this.directionalLight);
-    
+    */
+
     //TODO --- FIX point lights
     /*
     this.light1 = new THREE.PointLight(0xffffff, 10);
@@ -131,27 +129,176 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     this.scene.add(this.light4);
     */
 
+    //this.THREEBox.visible = false;
     //load the box
     console.log("Assembling Box...");
-   
-    //wait for the textures to be loaded
-    await Promise.all(
-      this.objParts.map(async (part, idx) => {
-        if(!part.partName.includes('marker')){
-          this.textureLoad(part.partName, part.material, part.texture, part.texture2)
-        }
-
-        if(this.objParts.length == (idx + 1)){
-          this.trigger = true;
-        }
-      })
-    )
-
-    if(this.trigger){
-      await this.assembleBoxParts();
-    }
+    await this.assembleBoxParts();
    
   }
+
+
+  private async assembleBoxParts(): Promise<void>{
+    this.loaderRGBE.load("/assets/model/textures/graffiti_shelter_4k.hdr", async(texture: any) => {
+      texture.mapping = THREE.EquirectangularReflectionMapping;
+      //texture.colorSpace = THREE.SRGBColorSpace;
+      //this.scene.background = texture;
+      this.ev = texture;
+      this.objParts.map(async(part, idx) => {
+        //create each part
+        this.createOBJ(part.material, part.object, part.partName, idx)
+      })
+      
+      //this.scene.environment = this.ev;
+      //this.renderer.render(this.scene, this.camera);
+    })
+
+  }
+
+  private async createOBJ(materialPath: string, OBJPath: string, partName: string, idx: number){
+    
+    console.log(materialPath)
+    //obj loader
+    let objLoader = new OBJLoader();
+    
+    if(!partName.includes("marker")){   
+      //load the given material
+      let mtlLoader = new MTLLoader();
+      mtlLoader.load(materialPath, function(materials)
+      {
+          materials.preload();
+          //set the textures
+          objLoader.setMaterials(materials);
+      });
+    }
+  
+    //load the object
+    objLoader.load(OBJPath, async(obj: THREE.Object3D ) => {
+     
+      if(this.isGroup){
+        //add to group
+        this.THREEBox.add(obj);
+      }
+     
+      this.THREEBox.layers.enableAll();
+      //assign to the global vars  
+  
+      if(partName == 'main_body') {
+        this.main_body = obj; 
+      }
+      if(partName == 'back_panel') {
+        this.back_panel = obj;
+      }
+      if(partName == 'front_equipment') {
+        this.front_equipment = obj;
+      }
+      if(partName == 'front_deadfront') {
+        this.deadfront= obj;
+      }
+      if(partName == 'back_deadfront') {
+        this.deadfront2= obj;
+      }
+      if(partName == 'front_panel') {
+        this.front_panel= obj;
+      }
+      if(partName.includes("marker")){
+        this.markers.push(obj);
+      }
+     
+      if(!partName.includes("marker")){    
+        let map: any;
+        let normal: any;
+        let alpha: any;
+        let metalness: any;
+        let roughness: any;
+
+        map = this.loadTextures('/assets/model/textures/'+ partName +'/Diffuse.png');
+        //console.log("NORMAL TEXTURE :", map) 
+        normal = this.loadTextures('/assets/model/textures/'+ partName +'/Normal.png');
+        //console.log("NORMAL TEXTURE :", normal) 
+        alpha = this.loadTextures('/assets/model/textures/'+ partName +'/Alpha.png');  
+        //console.log("ALPHA TEXTURE :", alpha) 
+        metalness = this.loadTextures('/assets/model/textures/'+ partName +'/Metalness.png');  
+        //console.log("METALNESS TEXTURE :", metalness) 
+        roughness = this.loadTextures('/assets/model/textures/'+ partName +'/Roughness.png');  
+        //console.log("ROUGHNESS TEXTURE :", roughness) 
+
+        if(partName != "concrete"){
+          obj.traverse((o:any) => {
+            o.material = new THREE.MeshStandardMaterial({
+            
+              map: map,
+              normalMap: normal,
+              alphaMap: alpha, 
+             
+              metalnessMap: metalness,
+              metalness: 1.0,
+              roughness: 0,
+              roughnessMap: roughness,
+              
+             envMap: this.ev,
+              envMapIntensity: 0.1,
+              
+             }); 
+             
+          }) 
+        }else{
+          obj.traverse((o:any) => {
+            o.material = new THREE.MeshStandardMaterial({
+           
+              map: map,
+              normalMap: normal,
+              alphaMap: alpha, 
+              roughness: 0.75,
+                      
+             }); 
+            
+          }) 
+        }
+       
+      }
+   
+      if(this.isGroup){
+        if(this.objParts.length == (idx + 1)){
+          //await this.renderer.compileAsync( obj, this.camera, this.scene );
+          //add the group and hotspots
+          this.addGroupToScene();
+          this.createModelHotspots();
+          console.log(this.THREEBox)    
+        }
+      }else{
+        //add the objects to the scene individually
+        this.scene.add(obj);
+      }
+     
+    })
+    
+}
+
+  public loadTextures(texture: string){
+    const loader = new THREE.TextureLoader();
+
+    // load a resource
+    return loader.load(
+      // resource URL
+      texture,
+    
+      // onLoad callback
+      function ( _texture ) {
+      //return the loaded texture to use
+      //console.log("Texture loaded: ", _texture)
+      return _texture;  
+      },
+    
+      // onProgress callback currently not supported
+      undefined,
+    
+      // onError callback
+      function ( err ) {
+        console.error( 'An error happened. ', err );
+      }
+    );
+  }
+
 
   //return the native element canvas
   private get canvas(): HTMLCanvasElement {
@@ -165,6 +312,7 @@ export class ThreeComponent implements OnInit, AfterViewInit {
 
 
   private startRenderingLoop(){
+    
     this.renderer = new THREE.WebGLRenderer({canvas: this.canvas, antialias: true});
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
@@ -175,13 +323,23 @@ export class ThreeComponent implements OnInit, AfterViewInit {
     let camera = this.camera;
     let model = this.THREEBox;
     let controls = this.controls;
-   
-    
+    let nexphaseS = this.nexphaseService.loading;
+    let index = 0;
     //render
     (function render(): void{
       component.renderer.render(component.scene, component.camera);
       component.css2drenderer.render(component.scene, component.camera)
       requestAnimationFrame(render);
+      
+      index++;
+      console.log(index)
+      
+      if(index == 50){
+       // model.visible = true;
+        nexphaseS.next("LOADED")
+      }
+       
+     
       //--- animations
      // labels[labels.length-1].visible = false;
      /*
@@ -219,356 +377,20 @@ export class ThreeComponent implements OnInit, AfterViewInit {
   };
 
   private createControls = () => {
-    console.log("Loading controls...");
+   
     //set controls and settings
     this.controls = new OrbitControls(this.camera, this.css2drenderer.domElement);
     this.controls.autoRotate = false;
     this.controls.enableZoom = true;
     this.controls.enablePan = false;
+    this.controls.maxDistance = 10;
+    this.controls.minDistance = 1;
     this.controls.update();
     
     this.nexphaseService.setControlsInstance(this.controls);
    
   };
 
-  private async assembleBoxParts(): Promise<void>{
-    this.loaderRGBE.load("/assets/model/textures/graffiti_shelter_4k.hdr", async(texture: any) => {
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      //texture.colorSpace = THREE.SRGBColorSpace;
-      //this.scene.background = texture;
-      this.ev = texture;
-     
-      this.objParts.map(async(part, idx) => {
-        //create each part
-        this.createOBJ(part.texture, part.material, part.object, part.partName, idx)
-      })
-      
-      //this.scene.environment = this.ev;
-      this.renderer.render(this.scene, this.camera);
-    })
-
-  }
-
-  private async createOBJ(texturePath: string, materialPath: string, OBJPath: string, partName: string, idx: number){
-    let mat: any;
-    let normalTexture: any;
-    let normal: any;
-    let ext: any;
-    
-    if(!partName.includes("marker")){   
-      //set the material/textures
-      this.textures.map((t: any) => {
-        if(t.part === partName){
-          console.log(t, partName);
-            mat = t.mat;
-            if(t.textures){
-      
-              normal = t.textures[0] ;
-              normalTexture = t.textures[1];
-
-              if(t.textures[2]){
-                ext = t.textures[2];
-              }
-            }
-          }
-      })
-
-      if(mat){
-        mat.preload();
-        this.loaderOBJ.setMaterials(mat)
-      }
-    } 
-
- 
-
-    this.loaderOBJ.load(OBJPath, async(obj: THREE.Object3D ) => {
-      if(this.isGroup){
-        //add to group
-        this.THREEBox.add(obj);
-      }
-     
-      this.THREEBox.layers.enableAll();
-      //assign to the global vars  
-  
-      if(partName == 'main_body') {
-        this.main_body = obj;
-        console.log(obj)
-      }
-      if(partName == 'back_panel') {
-        this.back_panel = obj;
-        console.log(obj)
-      }
-      if(partName == 'front_equipment') {
-        this.front_equipment = obj;
-      }
-      if(partName == 'front_deadfront') {
-        this.deadfront= obj;
-      }
-      if(partName == 'back_deadfront') {
-        this.deadfront2= obj;
-      }
-      if(partName == 'front_panel') {
-        this.front_panel= obj;
-        console.log(obj)
-      }
-      if(partName.includes("marker")){
-        this.markers.push(obj);
-      }
-
-
-      if(!partName.includes("marker")){    
-       
-       
-        obj.traverse((o:any) => {
-           if(o.isMesh){
-
-            //--- FRONT PANEL
-            if(o.name == 'front_panel_door_handle'){     
-              o.material = new THREE.MeshLambertMaterial({
-                color: 0xDAE1DB,
-              });
-            }
-            if(o.name == 'front_panel_shell_front_door'){ 
-              o.material = new THREE.MeshLambertMaterial({
-                map: normal,
-                //normalMap: normalTexture, 
-                combine: THREE.MixOperation, 
-                envMap: this.ev,
-                reflectivity: 0.005,
-              });
-            }
-            //--- BACK PANEL
-            if(o.name == 'back_panel_door_handle'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xDAE1DB,
-              });
-            }
-            if(o.name == 'back_panel_shell_back_door'){ 
-              o.material = new THREE.MeshLambertMaterial({
-                map: normal,
-                //normalMap: normalTexture, 
-                combine: THREE.MixOperation, 
-                envMap: this.ev,
-                reflectivity: 0.003,
-              });
-            }
-            //--- CONCRETE
-            if(o.name == 'concrete_concrete'){ 
-              o.material = new THREE.MeshLambertMaterial({
-                map: normal,
-                //normalMap: normalTexture, 
-                combine: THREE.MixOperation, 
-                envMap: this.ev,
-                reflectivity: 0.003,
-              });
-            }
-            //--- EQUIPMENT
-            if(o.name == 'equipment_stainless_steel'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
-                metalness: 1
-              });
-            }
-            if(o.name == 'equipment_shell'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
-              });
-            }
-            if(o.name == 'equipment_nuts_and_bolts'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xD3D3D3,
-                metalness: 1
-              });
-            }
-            if(o.name == 'equipment_threads'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xB3B3B3,
-              });
-            }
-            if(o.name == 'equipment_equipment_1'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0x6E6E6E,
-              });
-            }
-            //--- FRONT DEADFRONT
-            if(o.name == 'front_deadfront_stainless_steel'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                metalness: 1,
-              });
-            }
-            if(o.name == 'front_deadfront_shell'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
-              });
-            }
-            if(o.name == 'front_deadfront_nuts_and_bolts'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xD3D3D3,
-                metalness: 1
-              });
-            }
-            if(o.name == 'front_deadfront_equipment_1'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0x6E6E6E,
-              });
-            }
-            //--- BACK DEADFRONT
-            if(o.name == 'back_deadfront_vents'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0x3F3F3F,
-              });
-            }
-            if(o.name == 'back_deadfront_shell_monitoring_control_panel'){
-              o.material = new THREE.MeshStandardMaterial({
-                map: normal,
-                normalMap: normalTexture,  
-              });
-            }
-            if(o.name == 'back_deadfront_stainless_steel_w_holes'){
-              ext.wrapS = THREE.RepeatWrapping;
-              ext.wrapT = THREE.RepeatWrapping;
-              ext.repeat.set(2, 1); // Adjust the repeat values as needed
-              o.material = new THREE.MeshStandardMaterial({
-                map: ext,
-                normalMap: normalTexture,  
-              });
-            }
-            if(o.name == 'back_deadfront_shell' || o.name == 'back_deadfront_shell_main_breaker'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
-              });
-            }
-            if(o.name == 'back_deadfront_equipment_1' || o.name == 'back_deadfront_equipment_2'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0x6E6E6EFF,
-              });
-            }
-            if(o.name == 'back_deadfront_stainless_steel'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xFFFFFF,
-                metalness: 1
-              });
-            }
-            if(o.name == 'back_deadfront_nuts_and_bolts'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xD3D3D3,
-                metalness: 1
-              });
-            }
-            //--- MAIN BODY
-            if(o.name == 'main_body_stainless_steel'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-                metalness: 1,
-              });
-            }
-            if(o.name == 'main_body_stainless_steel_w_holes'){
-              //repat the material
-              ext.wrapS = THREE.RepeatWrapping;
-              ext.wrapT = THREE.RepeatWrapping;
-              ext.repeat.set(2, 1); // Adjust the repeat values as needed
-              o.material = new THREE.MeshStandardMaterial({
-                map: ext,
-                normalMap: normalTexture,  
-              });
-            }
-            if(o.name == 'main_body_vents'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0x3F3F3F,
-              });
-            }
-            if(o.name == 'main_body_shell_monitoring_control_panel'){
-              o.material = new THREE.MeshStandardMaterial({
-                map: normal,
-                //normalMap: normalTexture,  
-              });
-            }
-            
-            if(o.name == 'main_body_nuts_and_bolts'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0xD3D3D3FF,
-                metalness: 1
-              });
-            }
-            if(o.name == 'main_body_equipment_1' || o.name == 'main_body_equipment_2'){
-              o.material = new THREE.MeshStandardMaterial({
-                color: 0x6E6E6E,
-              });
-            }
-            if(o.name == 'main_body_shell'){
-              o.material = new THREE.MeshLambertMaterial({
-                color: 0xFFFFFF,
-                normalMap: normalTexture,
-                
-                envMap: this.ev,
-                reflectivity: 0.003,
-              });
-            }
-            }  
-          });
-       
-      }
-   
-      if(this.isGroup){
-        if(this.objParts.length == (idx + 1)){
-          await this.renderer.compileAsync( obj, this.camera, this.scene );
-          //add the group and hotspots
-          this.addGroupToScene();
-          this.createModelHotspots();
-        }
-      }else{
-        //add the objects to the scene individually
-        this.scene.add(obj);
-      }
-
-    })
-}
-
-
-public async textureLoad(part: any, materialPath: any, texturePath: string, texturePath2: string | undefined): Promise<any>{
-   //load the materials and textures
-  this.loaderMTL.load(materialPath, async(mtl: MTLLoader.MaterialCreator) => {
-    let normal;
-
-    if(part == 'concrete'){
-      normal = "/assets/model/textures/concrete_N.png";
-    }else{
-      normal = "/assets/model/textures/metal_frame_N.png";
-    }
-    
-    const texturesSRC = [
-      texturePath,
-      normal,      
-      texturePath2
-    ].map(texture => texture);
-    
-    let textures = await Promise.all(this.getTextures(texturesSRC)).catch(err => console.log(err));
-    
-    this.textures.push({
-      part: part,
-      textures: textures,
-      mat: mtl
-    });
-
-  })
-  
-}
-
-  //load the textures
-  private getTextures (texturesSources: any) {
-    const loader = new THREE.TextureLoader()
-    return texturesSources.map((textureSource: any) => {
-        return new Promise((resolve, reject) => {
-            loader.load(
-                textureSource,
-                texture => resolve(texture),
-                undefined, // onProgress callback not supported from r84
-                err => reject(err)
-            )
-        })
-    })
-  }
 
   private centerGroupBox(){
     //center and add the model to the scene     
@@ -582,7 +404,7 @@ public async textureLoad(part: any, materialPath: any, texturePath: string, text
     this.centerGroupBox();      
     //add the group of objects to the scene
     this.scene.add(this.THREEBox);
-    
+   
   }
 
   private getObjectParts(){
@@ -590,7 +412,7 @@ public async textureLoad(part: any, materialPath: any, texturePath: string, text
   }
 
   private createModelHotspots(){
-   
+
    this.scene.updateMatrixWorld(true);
 
     this.markers.map((h: any, i: number) => {
@@ -661,7 +483,7 @@ public async textureLoad(part: any, materialPath: any, texturePath: string, text
         })
  
     })
-    
+       
       
   }
 
@@ -674,13 +496,14 @@ public async textureLoad(part: any, materialPath: any, texturePath: string, text
 
   }
 
+  
   ngAfterViewInit(): void {
     this.createScene();
     //this.createCSS2Objects();
     this.startRenderingLoop();
     this.createCSS2DRenderer();
     this.createControls();
-   
+    
   }
 
   ngOnInit(): void {

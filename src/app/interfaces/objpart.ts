@@ -1,7 +1,7 @@
 export interface ObjPart {
     partName: string,
-    texture: string,
-    texture2?: string,
+    normal: string,
+    alpha: string,
     material: string,
     object: string
 }
